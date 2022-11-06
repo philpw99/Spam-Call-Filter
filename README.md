@@ -1,12 +1,12 @@
 # Spam Call Filter
 Use a voice modem to fend off those nasty tele-marketers.
 ## Disclaimer
-THIS PROGRAM IS PROVIDED AS IT IS. YOU USE IT AT YOUR OWN RISK. I AM NOT LIABLE FOR ANYTHING HAPPENS RELATED TO THIS PROGRAM.
+THIS PROGRAM IS PROVIDED AS IT IS. YOU USE IT AT YOUR OWN RISK. I AM NOT LIABLE FOR ANYTHING HAPPENS RELATED TO THIS PROGRAM.<p>
 If you miss some important calls because of my program, that's on you, not me.
 ## Why make this program?
-I have been annoyed by various agents calling my home for the last 5 years. They were all claimed to be calling about my "property" in Mexico !? And they all tried to convince me that I could sell that property for thousands of dollars. I kept sending Do-Not-Call agency hundreds of complains. Yet those tele-marketers just kept on calling. It seems there will never be an end to my suffering.
-Therefore I got really fed up for this. I need some tool to fight back. After just a little research I found out that I was not the only one. There are millions of people who are suffering the same bad experience just like me. I wonder why no one is trying to stop them.
-There is a very interesting app call "It's Lenny". It can trick those tele-marketers into talking to a machine. I love this idea! Yet it's very limited and I think it's time for a little update.
+I have been annoyed by various agents calling my home for the last 5 years. They were all claimed to be calling about my "property" in Mexico !? And they all tried to convince me that I could sell that property for thousands of dollars. I kept sending Do-Not-Call agency hundreds of complains. Yet those tele-marketers just kept on calling. It seems there will never be an end to my suffering.<p>
+Therefore I got really fed up for this. I need some tool to fight back. After just a little research I found out that I was not the only one. There are millions of people who are suffering the same bad experience just like me. I wonder why no one is trying to stop them.<p>
+There is a very interesting app call "It's Lenny". It can trick those tele-marketers into talking to a machine. I love this idea! Yet it's very limited and I think it's time for a little update.<p>
 Of course you can always transfer your call to a "It's Lenny" hot line, but I think it's much more fun to run one myself.
 ## How to run this program?
 * You need a USB modem that supports voice features, ideally with Conexant chipset.
