@@ -1,4 +1,4 @@
-;SetModemPort.au3
+; SetModemPort
 ; Input: "New" as new selction "COM1" as the port to set.
 ; Return true when the port is set
 ; Return false if fails.
@@ -97,10 +97,13 @@ Func GetModemInfo()
 	EndIf
 	
 	AddLine("Port: " & $sPort & " is connected.")
-	
+	Local $sResult = ""
+	SendCommand("ATE0")		; No echo
 	With $oModem
 		.Item("Port") = $sPort
-		.Item("Manufacturer") = GetLine( SendCommand("AT+FMI?"), 1 )
+		$sResult = SendCommand("AT+FMI?")
+		c("Manu:" & $sResult)
+		.Item("Manufacturer") = GetLine( $sResult, 1 )
 		.Item("ProductID") = GetLine( SendCommand("AT+FMM?"), 1 )
 		.Item("Version") = GetLine( SendCommand("AT+FMR?"), 1 )
 		Local $sVoiceClass = GetLine( SendCommand("AT+FCLASS=?"), 1)
@@ -120,16 +123,22 @@ EndFunc
 Func GetLine($str, $iLineNumber)
 	; return the line you want from text
 	If $iLineNumber < 1 Then Return ""
-	Local $iPosEnd = StringInStr($str, @CR, 1, $iLineNumber)
-	Local $iPosStart = ( $iLineNumber = 1 ? 1 : StringInStr($str, @CR, 1, $iLineNumber-1) )
-	If $iPosStart = 0 Then Return ""	; line number too big
-	If $iPosEnd = 0 Then 
-		; last line is in the end
-		Return StringStripCR( StringMid($str, $iPosStart) )
+	
+	Local $iPosStart, $iPosEnd
+	If $iLineNumber = 1 Then 
+		$iPosStart = 1
+		$iPosEnd = StringInStr($str, @CR, 0, 1)
+		If $iPosEnd = 1 Then Return ""	; The first line is empty
+		If $iPosEnd = 0 Then $iPosEnd = StringLen($str) + 1	; No @CR in the end
 	Else
-		; between 2 lines
-		Return StringStripCR( StringMid($str, $iPosStart, $iPosEnd-$iPosStart) )
+		$iPosStart = StringInStr($str, @CR, 1, $iLineNumber-1)
+		If $iPosStart = 0 Then Return ""	; $iLineNumber too big
+		$iPosEnd = StringInStr($str, @CR, 1, 1, $iPosStart + 1)
+		if $iPosEnd = 0 Then $iPosEnd = StringLen($str) + 1	; Last line and no @CR in the end
 	EndIf
+	
+	Return StringStripCR( StringMid($str, $iPosStart, $iPosEnd-$iPosStart) )
+
 EndFunc
 
 Func EndWithOK($str)
@@ -157,3 +166,40 @@ Func SetPort($sPort)
 	If $iErr = 1 Then Return "OK"
 	Return SetError($iErr, 0, $sErr)
 EndFunc
+
+Func InitModem()
+	; Initialize modem settings.
+	SendCommand("ATZ")	; Soft reset the modem to default profile
+	SendCommand("ATE0")	; Disable command echo
+	
+	Local $sResult = SendCommand("AT+FCLASS=8")	; Enter voice mode
+	If Not EndWithOK($sResult) Then 
+		Return SetError(1)
+	EndIf
+	AddLine ("Modem now initialized and in voice mode.")
+	AddLine("Set DTMF duration to 0.2" & @CRLF & SendCommand("AT+VTD=20") )	; Set DTMF dial tone duration. Reg is 85, too long.
+
+	; SendCommand("ATV1")	; Set verbose response
+	; SendCommand("ATX3")	; Set get basic result codes with dial tone detection
+
+	
+	$sResult = SendCommand("AT&V") ; Get all the parameters
+	; Get the codes.
+	With $oModem
+		.Item("Escape") = Int( GetPara($sResult, "S02:") )
+		.Item("CR") = Int( GetPara($sResult, "S03:") )
+		.Item("LF") = Int( GetPara($sResult, "S04:") )
+	EndWith
+	SendCommand("ATS0=0")	; Disable auto answering (just in case)
+	SendCommand("AT+VCID=1")	; Enable caller ID
+	
+EndFunc
+
+Func GetPara($sResult, $sPara)
+	; Get the S0, S1... value from the AT&V command result
+	Local $iPos1 = StringInStr($sResult, $sPara ) 
+	If $iPos1 = 0 Then Return ""
+	$iPos2 = StringInStr($sResult, " ", 2, 1, $iPos1 + 1)
+	Return StringStripWS(StringMid($sResult, $iPos1, $iPos2-$iPos1), 2)
+EndFunc
+

@@ -30,15 +30,15 @@ EndFunc
 Func SetCurrentRule($iRow)
 	; get the rule from the list and set the control
 	If $iRow = "" Then 
-		GUICtrlSetState($radPatternStart, $GUI_UNCHECKED )
-		GUICtrlSetState($radPatternEnd, $GUI_UNCHECKED )
-		GUICtrlSetState($radPatternExactly, $GUI_UNCHECKED )
-		GUICtrlSetData($inpPattern, "")
-		GUICtrlSetState($radPolicyWhiteList, $GUI_UNCHECKED )
-		GUICtrlSetState($radPolicyWarning, $GUI_UNCHECKED )
-		GUICtrlSetState($radPolicyDisconnect, $GUI_UNCHECKED )
-		GUICtrlSetState($radPolicyFakeFax, $GUI_UNCHECKED )
-		GUICtrlSetState($radPolicyPhilip, $GUI_UNCHECKED )
+;~ 		GUICtrlSetState($radPatternStart, $GUI_UNCHECKED )
+;~ 		GUICtrlSetState($radPatternEnd, $GUI_UNCHECKED )
+;~ 		GUICtrlSetState($radPatternExactly, $GUI_UNCHECKED )
+;~ 		GUICtrlSetData($inpPattern, "")
+;~ 		GUICtrlSetState($radPolicyWhiteList, $GUI_UNCHECKED )
+;~ 		GUICtrlSetState($radPolicyWarning, $GUI_UNCHECKED )
+;~ 		GUICtrlSetState($radPolicyDisconnect, $GUI_UNCHECKED )
+;~ 		GUICtrlSetState($radPolicyFakeFax, $GUI_UNCHECKED )
+;~ 		GUICtrlSetState($radPolicyPhilip, $GUI_UNCHECKED )
 	Else
 		Local $sPattern = _GUICtrlListView_GetItemText($lvRuleList, Int($iRow))
 		Local $sPolicy = _GUICtrlListView_GetItemText($lvRuleList, Int($iRow), 1)
@@ -139,6 +139,83 @@ EndFunc
 
 Func RuleAddPhilip()
 	RuleAdd("It's Philip")
+EndFunc
+
+Func RuleAddAdv()
+	; This is the rule add button in the second tab
+	$sNumber = guictrlread($inpPattern)
+	If $sNumber = "" Then 
+		MsgBox(262192,"Pattern number cannot be empty","The pattern number cannot be empty.",0, $guiMain)
+		Return 
+	EndIf
+	; Select pattern
+	Select 
+		Case Check($radPatternStart)
+			$sNumber &= "*"
+		Case Check($radPatternEnd)
+			$sNumber = "*" & $sNumber
+		Case Check($radPatternExactly)
+			; Do nothing here
+		Case Else
+			; Not select one at all.
+			MsgBox(262192,"Choose one way for the pattern.","You have to choose either 'start with', 'end with' or 'exactly'",0, $guiMain)
+			Return 
+	EndSelect
+	; Select policy
+	Local $sPolicy = ""
+	Select
+		Case Check($radPolicyWhiteList)
+			$sPolicy = "White List"
+		Case Check($radPolicyNone)
+			$sPolicy = "None"
+		Case Check($radPolicyWarning)
+			$sPolicy = "Warning"
+		Case Check($radPolicyDisconnect)
+			$sPolicy = "Disconnect"
+		Case Check($radPolicyFakeFax)
+			$sPolicy = "Fake Fax"
+		Case Check($radPolicyPhilip)
+			$sPolicy = "It's Philip"
+		Case Else
+			; Not select the policy yet
+			MsgBox(262192,"Choose one policy","You have to choose one of the policy.",0, $guiMain)
+			Return 
+	EndSelect
+	
+	If $sPolicy = "White List" Then
+		; Add it to the top
+		_ArrayInsert($gaRules, 1, $sNumber & "|" & $sPolicy)		; Insert new values above the first row
+		; Insert row in the rules list view as well.
+		_GUICtrlListView_InsertItem($lvRuleList, $sNumber, 0 )
+		_GUICtrlListView_SetItemText($lvRuleList, $sPolicy, 0, 1)
+	Else
+		; Add it to the end.
+		_ArrayAdd($gaRules, $sNumber& "|" & $sPolicy)	; Add new rule to the end
+		; Add new rule to the end of the rule list
+		Local $iItem = _GUICtrlListView_AddItem($lvRuleList, $sNumber)
+		_GUICtrlListView_SetItemText($lvRuleList, $sPolicy, $iItem, 1)
+	EndIf 
+	SaveRuleList()
+EndFunc
+
+Func RuleChange()
+	; This is for second tab rule change button
+	Local $iRow = _GUICtrlListView_GetSelectedIndices($lvRuleList)
+	MsgBox(0, "row", "Row selected:" & $iRow)
+EndFunc
+
+Func RuleDelete()
+	; This is for second tab rule delete button
+	Local $iRow = _GUICtrlListView_GetSelectedIndices($lvRuleList)
+	MsgBox(0, "row", "Row selected:" & $iRow)
+EndFunc
+
+Func Check($hControl)
+	Return GuiCtrlRead($hControl) = $GUI_CHECKED
+EndFunc
+
+Func NotCheck($hControl)
+	Return GuiCtrlRead($hControl) = $GUI_UNCHECKED
 EndFunc
 
 Func SaveRuleList()

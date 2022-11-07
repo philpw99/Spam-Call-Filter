@@ -2,7 +2,7 @@
 #AutoIt3Wrapper_Icon=modem.ico
 #AutoIt3Wrapper_UseX64=n
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-#include "CommMG.au3"
+
 #include <windowsconstants.au3>
 #include <buttonconstants.au3>
 #include <FileConstants.au3>
@@ -18,13 +18,15 @@
 #include <WINAPI.au3>	; For wav playback
 #include <Array.au3>
 
-#Region Initial Globals
+; Communication main functions
+#include "CommMG.au3"
+; Initialize globals
 #include "Globals.au3"
-#EndRegion Globals
 
 #include "Disclaimer.au3"
 If Not Disclaimer() Then Exit	; Not Accpeting the terms.
 
+; Create main gui
 Global $guiMain = GUICreate("Main",671,723,-1,-1,BitOr($WS_SIZEBOX,$WS_SYSMENU,$WS_MINIMIZEBOX),-1)
 #include "Forms\Main.isf"
 
@@ -81,7 +83,8 @@ If Not @error And $iAutoStart = 1 Then
 EndIf
 
 
-Global $ghTimer = TimerInit()
+Global $ghTimer = TimerInit()	; For doing things every second.
+Global $iCheckTime = 250		; Check every 250ms instead of 1000 ms
 While True
     ;sleep(40)
     ;gets characters received returning when one of these conditions is met:
@@ -90,44 +93,60 @@ While True
 
     If $instr <> '' Then ;if we got something
 		If StringStripWS($instr,3) <> "" Then
-			If $gbCallMonitor Then 
+			If $gbCallMonitor Then
+				c( "start processing line:" & $instr)
 				ProcessLine($instr)
 			EndIf
 			AddLine($instr)
 			; SaveLine($instr)
 		EndIf
     Else
-        Sleep(20) ;MichaelXMike
+        Sleep(20)
     EndIf
-	If TimerDiff($ghTimer) > 1000 Then 
+	If TimerDiff($ghTimer) > $iCheckTime Then 
 		DoEverySecond()
 		$ghTimer = TimerInit()
 	EndIf
 WEnd
 
-Alldone()
+Alldone()	; Disconnect all ports and exit
 
 #Region Functions
-#include "SetModemPort.au3"
-#include "Rules.au3"
-#include "PlayWav.au3"
+#include "Modem.au3"		; Modem functions
+#include "Settings.au3"
+#include "Rules.au3"		; Rules functions
+#include "PlayWav.au3"		; Functions to play wav files.
 
 Func Events()
     Opt("GUIOnEventMode", 1)
-	; Test 
-	GUICtrlSetOnEvent($btnTest, "TestLine")
-	; Buttons.
+
+	; General GUI stuff
     GUISetOnEvent($GUI_EVENT_CLOSE, "AllDone")
-    GUICtrlSetOnEvent($btnSend, "EventSend")
-    GUICtrlSetOnEvent($btnSetPort, "EventSetPort")
 	GUISetOnEvent($GUI_EVENT_RESIZED, "RememberSize")
+	
+	; First Tab Buttons
 	GUICtrlSetOnEvent($btnMonitor, "StartMonitor")
 	GUICtrlSetOnEvent($btnWhiteList, "RuleAddWhiteList")
 	GUICtrlSetOnEvent($btnWarning, "RuleAddWarning")
 	GUICtrlSetOnEvent($btnDisconnect, "RuleAddDisconnect")
 	GUICtrlSetOnEvent($btnFakeFax, "RuleAddFakeFax")
 	GUICtrlSetOnEvent($btnPhilip, "RuleIsPhilip")
+	
+	; Rule List Tab Buttons
+	GUICtrlSetOnEvent($btnRuleAddAdv, "RuleAddAdv")
+	GUICtrlSetOnEvent($btnRuleChange, "RuleChange")
+	GUICtrlSetOnEvent($btnRuleDelete, "RuleDelete")
+	
+	
+	; Setting Tab
+    GUICtrlSetOnEvent($btnSetPort, "EventSetPort")
 	GUICtrlSetOnEvent($chkAutoMonitor, "SetAutoMonitor")
+	GUICtrlSetOnEvent($btnSave, "SaveSettings")
+	
+	; Log Tab
+    GUICtrlSetOnEvent($btnSend, "EventSend")
+	GUICtrlSetOnEvent($btnTest, "TestLine")
+
 EndFunc   ;==>Events
 
 Func DoEverySecond()
@@ -151,15 +170,6 @@ Func DoEverySecond()
 			EndIf
 	EndSwitch 
 EndFunc
-
-Func SetAutoMonitor()
-	If GUICtrlRead($chkAutoMonitor) = $GUI_CHECKED Then 
-		RegWrite($gsRegBase, "AutoMonitor", "REG_DWORD", 1)
-	Else
-		RegWrite($gsRegBase, "AutoMonitor", "REG_DWORD", 0)
-	EndIf
-EndFunc
-
 
 Func TestLine()
 	; Pickup the line then get code.
@@ -193,6 +203,7 @@ EndFunc
 
 Func ProcessLine($sLine)
 	; When doing monitor. The info will come here in lines.
+	$sLine = StringStripWS($sLine, 1)	; No leading white space.
 	c("Line:" & $sLine)
 	Switch $sLine
 	
@@ -214,18 +225,20 @@ Func ProcessLine($sLine)
 		Case Else
 			If $gbRinging And Not $gbLineProcessed Then
 				c("Process line:" & $sLine)
-				Switch GetValueBySep($sLine, " = " )	; Get the value on the left side of =
-					Case $gsCodeDate
-						$gaCurrentCall[$CALL_DATE] = GetValueBySep($sLine, " = ", 2) ; Get the value on the right side of =
-					Case $gsCodeTime
-						$gaCurrentCall[$CALL_TIME] = GetValueBySep($sLine, " = ", 2)
-					Case $gsCodeNumber
-						$gaCurrentCall[$CALL_NUMBER] = GetValueBySep($sLine, " = ", 2)
-					Case $gsCodeName
-						$gaCurrentCall[$CALL_NAME] = GetValueBySep($sLine, " = ", 2)
+				Switch GetValueBySep($sLine, $gsCodeCidSep )	; Get the value on the left side of " = ", or other seperator.
+					Case $gsCodeCidDate
+						$gaCurrentCall[$CALL_DATE] = GetValueBySep($sLine, $gsCodeCidSep, 2) ; Get the value on the right side of =
+					Case $gsCodeCidTime
+						$gaCurrentCall[$CALL_TIME] = GetValueBySep($sLine, $gsCodeCidSep, 2)
+					Case $gsCodeCidNumber
+						$gaCurrentCall[$CALL_NUMBER] = GetValueBySep($sLine, $gsCodeCidSep, 2)
+					Case $gsCodeCidName
+						$gaCurrentCall[$CALL_NAME] = GetValueBySep($sLine, $gsCodeCidSep, 2)
 						; Now the name is entered. Time to process this phone.
 						ProcessCall()
 						$gbLineProcessed = True		; This call is processed. The following ring and call id will be ignored.
+					Case Else
+						c("Not process value on the left:" & GetValueBySep($sLine, $gsCodeCidSep ) )
 				EndSwitch
 			EndIf
 	EndSwitch
@@ -318,43 +331,6 @@ Func RememberSize()
 	RegWrite($gsRegBase, "WinH", "REG_DWORD", $aPos[3])
 EndFunc
 
-
-Func InitModem()
-	; Initialize modem settings.
-	SendCommand("ATZ")	; Soft reset the modem to default profile
-	SendCommand("ATE0")	; Disable command echo
-	Local $sResult = SendCommand("AT+FCLASS=8")	; Enter voice mode
-	If Not EndWithOK($sResult) Then 
-		Return SetError(1)
-	EndIf
-	AddLine ("Modem now initialized and in voice mode.")
-	AddLine("Set DTMF duration to 0.2" & SendCommand("AT+VTD=20") )	; Set DTMF dial tone duration. Reg is 85, too long.
-
-	; SendCommand("ATV1")	; Set verbose response
-	; SendCommand("ATX3")	; Set get basic result codes with dial tone detection
-
-	
-	$sResult = SendCommand("AT&V") ; Get all the parameters
-	; Get the codes.
-	With $oModem
-		.Item("Escape") = Int( GetPara($sResult, "S02:") )
-		.Item("CR") = Int( GetPara($sResult, "S03:") )
-		.Item("LF") = Int( GetPara($sResult, "S04:") )
-	EndWith
-	SendCommand("ATS0=0")	; Disable auto answering (just in case)
-	SendCommand("AT+FCLASS=8")	; Entering Voice mode
-	SendCommand("AT+VCID=1")	; Enable caller ID
-	
-EndFunc
-
-Func GetPara($sResult, $sPara)
-	; Get the S0, S1... value from the AT&V command result
-	Local $iPos1 = StringInStr($sResult, $sPara ) 
-	If $iPos1 = 0 Then Return ""
-	$iPos2 = StringInStr($sResult, " ", 2, 1, $iPos1 + 1)
-	Return StringStripWS(StringMid($sResult, $iPos1, $iPos2-$iPos1), 2)
-EndFunc
-
 Func PortIsOK()
 	; Return true if OK, false if not.
 	$sResult = SendCommand("AT")
@@ -420,6 +396,9 @@ Func AddLine($Line)
 ;~ 	_GUICtrlEdit_Scroll($edReceived, $SB_SCROLLCARET )	; Scroll to the end.
 ;~ 	_GUICtrlEdit_SetSel($edReceived, -1, -1)	; Deselect last line.
 
+	; Save it to a file if set in settings.
+	If $gbSaveLog Then SaveLine($Line)
+		
 EndFunc
 
 Func EventSetPort()
@@ -448,9 +427,8 @@ Func EventSend();send the text in the inputand append CR
 EndFunc   ;==>SendEvent
 
 Func AllDone()
-    ;MsgBox(0,'will close ports','')
+	SendCommand("ATZ")	; Reset modem.
     _Commcloseport(true)
-    ;MsgBox(0,'port closed','')
     Exit
 EndFunc   ;==>AllDone
 
