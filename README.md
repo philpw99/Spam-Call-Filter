@@ -1,6 +1,6 @@
 # Spam Call Filter
-Use a voice modem to fend off those nasty tele-marketers.
-Take a look at the Wiki to see the preview of my program.
+Use a voice modem to fend off those nasty tele-marketers.<br>
+Take a look at the Wiki to see the preview of my program.<br>
 https://github.com/philpw99/Spam-Call-Filter/wiki
 
 ## Disclaimer
