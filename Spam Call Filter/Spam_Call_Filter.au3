@@ -16,6 +16,7 @@
 #include <GuiListView.au3>
 #include <GuiTab.au3>
 #include <WINAPI.au3>	; For wav playback
+#include <Array.au3>
 
 #Region Initial Globals
 ; All registry settings stored here.
@@ -23,6 +24,12 @@ Global $gsRegBase = "HKEY_CURRENT_USER\Software\SpamCallFilter"
 Global $oModem = ObjCreate("Scripting.Dictionary")
 ; Not monitor yet.
 Global $gbCallMonitor = False, $gbLineProcessing = False, $gbRinging = False, $gbOnHook = True
+
+; AppData folder
+Global $gsAppDir = @AppDataDir & "\SpamCallFilter"
+If Not FileExists($gsAppDir) Then 
+	DirCreate($gsAppDir)
+EndIf
 
 ; Ringing code
 Global $gsCodeRing = RegRead($gsRegBase, "CodeRing")
@@ -38,6 +45,10 @@ If @error Then
 	RegWrite($gsRegBase, "CodeCIDNumber", "REG_SZ", $gsCodeCIDNumber)
 EndIf
 
+Global $gaRules[0][2]		; Data for $lvRuleList]]
+Enum $RULE_PATTERN, $RULE_POLICY
+
+Global $giCurrentRuleIndice, $giCurrentPhoneCallIndice
 #EndRegion Globals
 
 #include "Disclaimer.au3"
@@ -72,6 +83,9 @@ Else
 	EndIf
 EndIf
 
+; Load Rule Data
+LoadRules()
+
 GetModemInfo()
 ; Initialize modem settings, put it in voicemode
 InitModem()
@@ -89,6 +103,7 @@ _CommSetXonXoffProperties(11, 13, 100, 100)
 ; Start event mode
 Events()
 
+Global $ghTimer = TimerInit()
 While True
     ;sleep(40)
     ;gets characters received returning when one of these conditions is met:
@@ -106,7 +121,10 @@ While True
     Else
         Sleep(20) ;MichaelXMike
     EndIf
-
+	If TimerDiff($ghTimer) > 1000 Then 
+		DoEverySecond()
+		$ghTimer = TimerInit()
+	EndIf
 WEnd
 
 Alldone()
@@ -124,7 +142,41 @@ Func Events()
 	GUISetOnEvent($GUI_EVENT_RESIZED, "RememberSize")
 	GUICtrlSetOnEvent($btnMonitor, "StartMonitor")
 	GUICtrlSetOnEvent($btnTest, "RuleIsPhilip")
+	GUICtrlSetOnEvent($btnWhiteList, "RuleAddWhiteList")
+	GUICtrlSetOnEvent($btnWarning, "RuleAddWarning")
+	GUICtrlSetOnEvent($btnDisconnect, "RuleAddDisconnect")
+	GUICtrlSetOnEvent($btnFakeFax, "RuleAddFakeFax")
+	GUICtrlSetOnEvent($btnPhilip, "RuleAddPhilip")
 EndFunc   ;==>Events
+
+Func DoEverySecond()
+	Local $iRow
+	; Check on something every second
+	Switch _GUICtrlTab_GetCurFocus($tab)
+		Case 0	; Phone calls
+			$iRow = _GUICtrlListView_GetSelectedIndices($lvPhoneCalls)
+			If $iRow <> $giCurrentPhoneCallIndice Then 
+				; Some row is selected or unselected
+				SetCurrentNumber($iRow)
+				$giCurrentPhoneCallIndice = $iRow
+			EndIf
+			
+		Case 1	; Rule list
+			$iRow = _GUICtrlListView_GetSelectedIndices($lvRuleList)
+			If $iRow <> $giCurrentRuleIndice Then 
+				; Some row is selected or unselected
+				SetCurrentRule($iRow)
+				$giCurrentRuleIndice = $iRow
+			EndIf
+	EndSwitch 
+	
+	
+EndFunc
+
+
+Func Bingo()
+	MsgBox(0, "Bingo", "Bingo")
+EndFunc
 
 Func WaitReceiveLines($iTimeLimit = 5000 )
 	; This is for writing received lines only
@@ -174,7 +226,7 @@ EndFunc
 Func GetValueBySep($str, $sep, $occur = 1)
 	; return the value seperated by $sep
 	; Like str ="v1 v2 v3 v4", $sep=" ", $occur = 3 then return "v3"
-	Local $pos1 = ( $occur = 1 ? 1 : StringInStr($str, $sep, 1, $occur - 1) + 1 )
+	Local $pos1 = ( $occur = 1 ? 1 : StringInStr($str, $sep, 1, $occur - 1) + StringLen($sep) )
 	Local $pos2 = StringInStr($str, $sep, 1, $occur )
 	If $pos2 = 0 Then $pos2 = Stringlen($str) + 1
 	Return StringMid($str, $pos1, $pos2 - $pos1)
@@ -279,7 +331,7 @@ Func SaveLine($line)
 	; C("LINE:" & StringToBinary($line))
 	If $line = "" Then return
 	; Save file
-	Local $sFile = @ScriptDir & "\ComLog.txt"
+	Local $sFile = $gsAppDir & "\ComLog.txt"
 	Local $hFile = FileOpen($sFile, $FO_APPEND )
 	If $hFile = -1 Then Return SetError(1)
 	FileWrite($hFile, @MON & "/" & @MDAY & " " & @HOUR & ":" & @MIN & " " & $line & @CR)

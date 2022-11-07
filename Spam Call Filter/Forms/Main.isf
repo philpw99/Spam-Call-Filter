@@ -1,5 +1,5 @@
 ; -- Created with ISN Form Studio 2 for ISN AutoIt Studio -- ;
-$tab = GUICtrlCreatetab(10,22,643,680,-1,-1)
+$tab = GUICtrlCreatetab(11,22,643,680,-1,-1)
 GuiCtrlSetState(-1,2048)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetResizing(-1,102)
@@ -9,164 +9,171 @@ GUICtrlCreateTabItem("Settings")
 GUICtrlCreateTabItem("Logs")
 GUICtrlCreateTabItem("")
 _GUICtrlTab_SetCurFocus($tab,-1)
-GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,2)&GUICtrlRead ($tab, 1))
-GUICtrlCreateLabel("Modem Port",31,80,94,20,$SS_RIGHT,-1)
+GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,0)&GUICtrlRead ($tab, 1))
+$lvPhoneCalls = GUICtrlCreatelistview("Call Time|Number|Caller ID Name|Policy Applied",26,82,433,601,-1,$WS_EX_CLIENTEDGE)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetResizing(-1,102)
+GUICtrlCreateTabItem("")
+GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,0)&GUICtrlRead ($tab, 1))
+GUICtrlCreateGroup("Status",476,72,163,114,$BS_CENTER,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
-GUICtrlSetBkColor(-1,"-2")
-GUICtrlSetResizing(-1,802)
-GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,3)&GUICtrlRead ($tab, 1))
-$inpCommand = GUICtrlCreateInput("",119,64,273,27,-1,$WS_EX_CLIENTEDGE)
-GUICtrlSetFont(-1,12,400,0,"Tahoma")
-GUICtrlSetTip(-1,"Send a custom command to the modem. Usually starts with 'AT'")
-GUICtrlSetResizing(-1,38)
-GUICtrlCreateLabel("Command",23,68,82,17,$SS_RIGHT,-1)
-GUICtrlSetFont(-1,12,400,0,"Tahoma")
-GUICtrlSetBkColor(-1,"-2")
-GUICtrlSetResizing(-1,802)
-GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,2)&GUICtrlRead ($tab, 1))
-$lblComPort = GUICtrlCreateLabel("COM1",137,80,106,20,$SS_CENTER,-1)
-GUICtrlSetFont(-1,12,400,0,"Tahoma")
-GUICtrlSetBkColor(-1,"-2")
-GUICtrlSetResizing(-1,802)
-GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,3)&GUICtrlRead ($tab, 1))
-$btnSend = GUICtrlCreateButton("Send",408,64,100,30,-1,-1)
-GUICtrlSetFont(-1,12,400,0,"Tahoma")
-GUICtrlSetTip(-1,"Send a custom command to the modem. Usually starts with 'AT'")
 GUICtrlSetResizing(-1,804)
-GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,2)&GUICtrlRead ($tab, 1))
-$btnSetPort = GUICtrlCreateButton("Set Port",272,73,100,30,-1,-1)
-GUICtrlSetFont(-1,12,400,0,"Tahoma")
-GUICtrlSetResizing(-1,802)
-GUICtrlCreateLabel("",142,80,106,23,$SS_GRAYFRAME,-1)
-GUICtrlSetFont(-1,12,400,0,"Tahoma")
+$lbStatus = GUICtrlCreateLabel("Not Monitoring",491,102,141,62,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"-2")
-GUICtrlSetResizing(-1,802)
-GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,0)&GUICtrlRead ($tab, 1))
-$lvPhoneCalls = GUICtrlCreatelistview("Call Time|Number|Caller ID Name|Rule Applied",29,82,433,601,-1,$WS_EX_CLIENTEDGE)
+GUICtrlSetResizing(-1,804)
+$btnMonitor = GUICtrlCreateButton("Start Call Monitor",481,202,151,28,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlSetResizing(-1,102)
-$btnFakeFax = GUICtrlCreateButton("Fake Fax",507,591,100,30,-1,-1)
-GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlSetTip(-1,"Answer this number and pretend to be a fax machine.")
-GUICtrlSetResizing(-1,836)
-GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,3)&GUICtrlRead ($tab, 1))
-$edReceived = GUICtrlCreateEdit("",23,105,610,569,BitOr($ES_AUTOHSCROLL,$ES_MULTILINE,$WS_VSCROLL),-1)
-GUICtrlSetFont(-1,12,400,0,"Tahoma")
-GUICtrlSetBkColor(-1,"0xEAEAEA")
-GUICtrlSetResizing(-1,102)
-GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,0)&GUICtrlRead ($tab, 1))
-$btnWhiteList = GUICtrlCreateButton("White List",509,400,100,30,-1,-1)
-GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlSetTip(-1,"This number is my family or friend's.")
-GUICtrlSetResizing(-1,836)
-$btnLenny = GUICtrlCreateButton("It's Lenny",509,644,100,30,-1,-1)
-GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlSetTip(-1,"Transfer this number to a It's Lenny number. Use this only for nasty tele-marketers.")
-GUICtrlSetResizing(-1,836)
-$btnDisconnect = GUICtrlCreateButton("Disconnect",509,536,100,30,-1,-1)
-GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlSetTip(-1,"Pick up the phone then disconnect it.")
-GUICtrlSetResizing(-1,836)
-GUICtrlCreateGroup("Rules To Apply",475,360,163,323,$BS_CENTER,-1)
+GUICtrlCreateGroup("Policy For This Call",476,297,163,386,$BS_CENTER,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Select a number on left then click on one of the rules. It will add a rule to the rules list.")
 GUICtrlSetResizing(-1,836)
+$inpNumber = GUICtrlCreateInput("",491,341,130,24,$ES_NUMBER,$WS_EX_CLIENTEDGE)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetTip(-1,"The phone number to apply policy to. Or you can click on one on the left.")
+GUICtrlSetResizing(-1,836)
+$btnWhiteList = GUICtrlCreateButton("White List",510,410,100,30,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetTip(-1,"This number is my family or friend's.")
+GUICtrlSetResizing(-1,836)
+$btnWarning = GUICtrlCreateButton("Warning",510,467,100,30,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetTip(-1,"Pick up the phone then play a warning message and disconnect.")
+GUICtrlSetResizing(-1,836)
+$btnDisconnect = GUICtrlCreateButton("Disconnect",510,516,100,30,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetTip(-1,"Pick up the phone then disconnect it.")
+GUICtrlSetResizing(-1,836)
+$btnFakeFax = GUICtrlCreateButton("Fake Fax",508,571,100,30,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetTip(-1,"Answer this number and pretend to be a fax machine.")
+GUICtrlSetResizing(-1,836)
+$btnPhilip = GUICtrlCreateButton("It's Philip",510,624,100,30,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetTip(-1,"Transfer this number to a It's Lenny number. Use this only for nasty tele-marketers.")
+GUICtrlSetResizing(-1,836)
 GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,1)&GUICtrlRead ($tab, 1))
-$lvRuleList = GUICtrlCreatelistview("Number Pattern|Rule To Apply",30,62,397,623,-1,$WS_EX_CLIENTEDGE)
+$lvRuleList = GUICtrlCreatelistview("Number Pattern|Policy To Apply",36,62,397,623,BitOr($LVS_NOSORTHEADER,$LVS_SINGLESEL),BitOr($LVS_EX_FULLROWSELECT,$LVS_EX_GRIDLINES,$WS_EX_CLIENTEDGE))
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetResizing(-1,102)
-GUICtrlCreateGroup("Pattern",456,78,180,143,$BS_CENTER,-1)
+GUICtrlCreateGroup("Pattern",457,78,180,143,$BS_CENTER,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Pattern of phone number. Numbers that fit this pattern will be handled by the rule below.")
 GUICtrlSetResizing(-1,804)
-$radPatternStart = GUICtrlCreateRadio("Starts With ...",469,102,127,20,-1,-1)
+$radPatternStart = GUICtrlCreateRadio("Starts With ...",470,102,127,20,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetTip(-1,"The phone number starts with certain numbers.")
 GUICtrlSetResizing(-1,804)
-$radPatternEnd = GUICtrlCreateRadio("Ends With ...",469,127,127,20,-1,-1)
+$radPatternEnd = GUICtrlCreateRadio("Ends With ...",470,127,127,20,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetTip(-1,"The phone number ends with certain numbers.")
 GUICtrlSetResizing(-1,804)
-$radPatternExactly = GUICtrlCreateRadio("Exactly",469,154,127,20,-1,-1)
+$radPatternExactly = GUICtrlCreateRadio("Exactly",470,154,127,20,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Exactly the number")
 GUICtrlSetResizing(-1,804)
-GUICtrlCreateInput("",469,182,150,20,-1,$WS_EX_CLIENTEDGE)
+$inpPattern = GUICtrlCreateInput("",470,182,150,20,$ES_NUMBER,$WS_EX_CLIENTEDGE)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Partial or full numbers of the phone.")
 GUICtrlSetResizing(-1,804)
-GUICtrlCreateGroup("Rule to Apply",456,242,180,246,$BS_CENTER,-1)
+GUICtrlCreateGroup("Policy to Apply",457,242,180,277,$BS_CENTER,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetResizing(-1,804)
-$btnRuleAdd = GUICtrlCreateButton("Add Rule",492,565,100,30,-1,-1)
+$radPolicyWhiteList = GUICtrlCreateRadio("White List",478,271,119,20,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetResizing(-1,804)
+$radPolicyNone = GUICtrlCreateRadio("No Policy",478,306,119,20,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetResizing(-1,804)
+$radPolicyWarning = GUICtrlCreateRadio("Warning",478,358,119,20,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetResizing(-1,804)
+$radPolicyDisconnect = GUICtrlCreateRadio("Disconnect",478,395,119,20,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetResizing(-1,804)
+$radPolicyFakeFax = GUICtrlCreateRadio("Fake Fax",478,430,119,20,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetResizing(-1,804)
+$radPolicyPhilip = GUICtrlCreateRadio("It's Philip",478,472,119,20,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetResizing(-1,804)
+$btnRuleAdd = GUICtrlCreateButton("Add Rule",493,565,100,30,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Add a rule by using the pattern and rule selection above.")
 GUICtrlSetResizing(-1,836)
-$btnRuleDelete = GUICtrlCreateButton("Delete Rule",492,655,100,30,-1,-1)
-GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlSetTip(-1,"Select a rule on the left, the click here to delete that rule.")
-GUICtrlSetResizing(-1,836)
-$btnRuleChange = GUICtrlCreateButton("Change Rule",492,611,100,30,-1,-1)
+$btnRuleChange = GUICtrlCreateButton("Change Rule",493,611,100,30,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Change the rule by using the pattern and rule selection above.")
 GUICtrlSetResizing(-1,836)
-$radRuleWhiteList = GUICtrlCreateRadio("White List",477,281,119,20,-1,-1)
+$btnRuleDelete = GUICtrlCreateButton("Delete Rule",493,655,100,30,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlSetResizing(-1,804)
-$radRuleDisconnect = GUICtrlCreateRadio("Disconnect",477,372,119,20,-1,-1)
-GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlSetResizing(-1,804)
-$radRuleFakeFax = GUICtrlCreateRadio("Fake Fax",477,407,119,20,-1,-1)
-GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlSetResizing(-1,804)
-$radRuleLenny = GUICtrlCreateRadio("It's Lenny",477,449,119,20,-1,-1)
-GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlSetResizing(-1,804)
-GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,0)&GUICtrlRead ($tab, 1))
-$btnMonitor = GUICtrlCreateButton("Start Call Monitor",480,202,151,28,-1,-1)
-GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlCreateGroup("Status",475,72,163,114,$BS_CENTER,-1)
-GUICtrlSetFont(-1,12,400,0,"Tahoma")
-GUICtrlSetResizing(-1,804)
-$lbStatus = GUICtrlCreateLabel("Not Monitoring",490,102,141,62,-1,-1)
-GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlSetBkColor(-1,"-2")
-GUICtrlSetResizing(-1,804)
+GUICtrlSetTip(-1,"Select a rule on the left, the click here to delete that rule.")
+GUICtrlSetResizing(-1,836)
 GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,2)&GUICtrlRead ($tab, 1))
-$chkAutoMonitor = GUICtrlCreateCheckbox("Auto Start Monitoring",40,121,188,20,-1,-1)
+GUICtrlCreateLabel("Modem Port",32,80,94,20,$SS_RIGHT,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetBkColor(-1,"-2")
+GUICtrlSetResizing(-1,802)
+$lblComPort = GUICtrlCreateLabel("COM1",138,80,106,20,$SS_CENTER,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetBkColor(-1,"-2")
+GUICtrlSetResizing(-1,802)
+GUICtrlCreateLabel("",143,80,106,23,$SS_GRAYFRAME,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetBkColor(-1,"-2")
+GUICtrlSetResizing(-1,802)
+$btnSetPort = GUICtrlCreateButton("Set Port",273,73,100,30,-1,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetResizing(-1,802)
+$chkAutoMonitor = GUICtrlCreateCheckbox("Auto Start Monitoring",41,121,188,20,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Enter monitor mode once the program is running.")
-$inpCodeRing = GUICtrlCreateInput("R",158,212,77,23,-1,$WS_EX_CLIENTEDGE)
+GUICtrlCreateGroup("Receive Code",49,177,200,160,$BS_CENTER,-1)
+GUICtrlSetFont(-1,12,700,0,"Tahoma")
+GUICtrlSetResizing(-1,802)
+GUICtrlCreateLabel("Ring",60,214,49,25,-1,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetBkColor(-1,"-2")
+GUICtrlSetResizing(-1,802)
+$inpCodeRing = GUICtrlCreateInput("R",159,212,77,23,-1,$WS_EX_CLIENTEDGE)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetTip(-1,"When modem detects a ring. It will send back Chr(16)+R")
 GUICtrlSetResizing(-1,802)
-GUICtrlCreateLabel("Ring",59,214,49,25,-1,-1)
+GUICtrlCreateLabel("CID Number",62,254,89,25,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,802)
-GUICtrlCreateGroup("Receive Code",48,177,200,160,$BS_CENTER,-1)
-GUICtrlSetFont(-1,12,700,0,"Tahoma")
-GUICtrlSetResizing(-1,802)
-GUICtrlCreateInput("NMBR",158,252,77,23,-1,$WS_EX_CLIENTEDGE)
+GUICtrlCreateInput("NMBR",159,252,77,23,-1,$WS_EX_CLIENTEDGE)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetTip(-1,"The leading tag of caller ID.")
 GUICtrlSetResizing(-1,802)
-GUICtrlCreateLabel("CID Number",61,254,89,25,-1,-1)
+GUICtrlCreateLabel("Underbuffer",62,292,89,25,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,802)
-GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,3)&GUICtrlRead ($tab, 1))
-$btnTest = GUICtrlCreateButton("Test",520,64,100,30,-1,-1)
-GUICtrlSetFont(-1,12,400,0,"Tahoma")
-GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,2)&GUICtrlRead ($tab, 1))
-GUICtrlCreateInput("u",158,290,77,23,-1,$WS_EX_CLIENTEDGE)
+GUICtrlCreateInput("u",159,290,77,23,-1,$WS_EX_CLIENTEDGE)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Important when playing voice file with modem. Default is Chr(16)+u")
 GUICtrlSetResizing(-1,802)
-GUICtrlCreateLabel("Underbuffer",61,292,89,25,-1,-1)
+GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,3)&GUICtrlRead ($tab, 1))
+GUICtrlCreateLabel("Command",24,68,82,17,$SS_RIGHT,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,802)
+$inpCommand = GUICtrlCreateInput("",120,64,273,27,-1,$WS_EX_CLIENTEDGE)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetTip(-1,"Send a custom command to the modem. Usually starts with 'AT'")
+GUICtrlSetResizing(-1,38)
+$btnSend = GUICtrlCreateButton("Send",409,64,100,30,-1,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetTip(-1,"Send a custom command to the modem. Usually starts with 'AT'")
+GUICtrlSetResizing(-1,804)
+$btnTest = GUICtrlCreateButton("Test",521,64,100,30,-1,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+$edReceived = GUICtrlCreateEdit("",24,105,610,569,BitOr($ES_AUTOHSCROLL,$ES_MULTILINE,$WS_VSCROLL),-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetBkColor(-1,"0xEAEAEA")
+GUICtrlSetResizing(-1,102)
 _GUICtrlTab_SetCurFocus($tab,0)
 
 
@@ -177,7 +184,7 @@ type=tab
 handle=433
 locked=0
 resize=102
-x=10
+x=11
 y=22
 width=643
 height=680
@@ -202,7 +209,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=0
-[0x00121E32]
+[0x00101EB2]
 order=0
 [TABPAGE4]
 page=4
@@ -258,14 +265,14 @@ gui_event_secoundarydown=
 gui_event_secoundaryup=
 gui_event_resized=
 gui_event_dropped=
-defaultfont=Tahoma
-defaultfontsize=12
-[0x00071E2E]
+defaultfont=MS Sans Serif
+defaultfontsize=8
+[0x00871E54]
 type=label
 handle=434
 locked=0
 resize=802
-x=31
+x=32
 y=80
 width=94
 height=20
@@ -284,17 +291,17 @@ style=$SS_RIGHT
 exstyle=
 bgcolour=-2
 code=
-order=2
+order=27
 tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00071F18]
+[0x00981A12]
 type=input
 handle=435
 locked=0
 resize=38
-x=119
+x=120
 y=64
 width=273
 height=27
@@ -313,17 +320,17 @@ style=
 exstyle=$WS_EX_CLIENTEDGE
 bgcolour=
 code=
-order=4
+order=40
 tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x00A5208A]
+[0x003C1F32]
 type=label
 handle=436
 locked=0
 resize=802
-x=23
+x=24
 y=68
 width=82
 height=17
@@ -342,17 +349,17 @@ style=$SS_RIGHT
 exstyle=
 bgcolour=-2
 code=
-order=5
+order=39
 tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x00AC1FD4]
+[0x00451F0C]
 type=button
 handle=437
 locked=0
 resize=804
-x=408
+x=409
 y=64
 width=100
 height=30
@@ -371,17 +378,17 @@ style=
 exstyle=
 bgcolour=
 code=
-order=6
+order=41
 tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x001B1EFE]
+[0x007615E4]
 type=label
 handle=438
 locked=0
 resize=802
-x=137
+x=138
 y=80
 width=106
 height=20
@@ -400,17 +407,17 @@ style=$SS_CENTER
 exstyle=
 bgcolour=-2
 code=
-order=6
+order=28
 tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x000F1EF6]
+[0x00451E60]
 type=button
 handle=439
 locked=0
 resize=802
-x=272
+x=273
 y=73
 width=100
 height=30
@@ -429,17 +436,17 @@ style=
 exstyle=
 bgcolour=
 code=
-order=7
+order=30
 tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00071EF4]
+[0x01201F96]
 type=label
 handle=440
 locked=0
 resize=802
-x=142
+x=143
 y=80
 width=106
 height=23
@@ -462,13 +469,13 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-order=8
-[0x00061F0C]
+order=29
+[0x00631A86]
 type=edit
 handle=441
 locked=0
 resize=102
-x=23
+x=24
 y=105
 width=610
 height=569
@@ -487,17 +494,17 @@ style=$ES_AUTOHSCROLL+$ES_MULTILINE+$WS_VSCROLL
 exstyle=
 bgcolour=0xEAEAEA
 code=
-order=11
+order=43
 tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x00081E1C]
+[0x000A1EB8]
 type=listview
 handle=442
 locked=0
 resize=102
-x=29
+x=26
 y=82
 width=433
 height=601
@@ -510,24 +517,24 @@ tooltip=
 bgimage=
 textcolour=0x000000
 id=$lvPhoneCalls
-text=Call Time|Number|Caller ID Name|Rule Applied
+text=Call Time|Number|Caller ID Name|Policy Applied
 state=$GUI_SHOW+$GUI_ENABLE
 style=
 exstyle=$WS_EX_CLIENTEDGE
 bgcolour=
 code=
-order=10
+order=0
 tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00081F42]
+[0x000C1EBA]
 type=button
 handle=443
 locked=0
 resize=836
-x=507
-y=591
+x=508
+y=571
 width=100
 height=30
 func=
@@ -545,18 +552,18 @@ style=
 exstyle=
 bgcolour=
 code=
-order=11
+order=9
 tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00061F3E]
+[0x000F1D48]
 type=button
 handle=444
 locked=0
 resize=836
-x=509
-y=400
+x=510
+y=410
 width=100
 height=30
 func=
@@ -578,14 +585,14 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-order=12
-[0x00061F40]
+order=6
+[0x00101D52]
 type=button
 handle=445
 locked=0
 resize=836
-x=509
-y=644
+x=510
+y=624
 width=100
 height=30
 func=
@@ -596,8 +603,8 @@ fontattribute=0
 tooltip=Transfer this number to a It's Lenny number. Use this only for nasty tele-marketers.
 bgimage=
 textcolour=0x000000
-id=$btnLenny
-text=It's Lenny
+id=$btnPhilip
+text=It's Philip
 state=$GUI_SHOW+$GUI_ENABLE
 style=
 exstyle=
@@ -607,14 +614,14 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-order=13
-[0x00061F3C]
+order=10
+[0x000C1EBC]
 type=button
 handle=446
 locked=0
 resize=836
-x=509
-y=536
+x=510
+y=516
 width=100
 height=30
 func=
@@ -636,16 +643,16 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-order=14
-[0x00061F3A]
+order=8
+[0x000A1EA0]
 type=group
 handle=447
 locked=0
 resize=836
-x=475
-y=360
+x=476
+y=297
 width=163
-height=323
+height=386
 func=
 font=Tahoma
 fontsize=12
@@ -655,23 +662,23 @@ tooltip=Select a number on left then click on one of the rules. It will add a ru
 bgimage=
 textcolour=0x000000
 id=
-text=Rules To Apply
+text=Policy For This Call
 state=$GUI_SHOW+$GUI_ENABLE
 style=$BS_CENTER
 exstyle=
 bgcolour=
 code=
-order=16
+order=4
 tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00061F38]
+[0x00091E3A]
 type=listview
 handle=448
 locked=0
 resize=102
-x=30
+x=36
 y=62
 width=397
 height=623
@@ -684,23 +691,23 @@ tooltip=
 bgimage=
 textcolour=0x000000
 id=$lvRuleList
-text=Number Pattern|Rule To Apply
+text=Number Pattern|Policy To Apply
 state=$GUI_SHOW+$GUI_ENABLE
-style=
-exstyle=$WS_EX_CLIENTEDGE
+style=$LVS_NOSORTHEADER+$LVS_SINGLESEL
+exstyle=$LVS_EX_FULLROWSELECT+$LVS_EX_GRIDLINES+$WS_EX_CLIENTEDGE
 bgcolour=
 code=
-order=17
+order=11
 tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00071F32]
+[0x000A1E3C]
 type=group
 handle=449
 locked=0
 resize=804
-x=456
+x=457
 y=78
 width=180
 height=143
@@ -719,17 +726,17 @@ style=$BS_CENTER
 exstyle=
 bgcolour=
 code=
-order=18
+order=12
 tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00061F30]
+[0x00091E7A]
 type=radio
 handle=450
 locked=0
 resize=804
-x=469
+x=470
 y=102
 width=127
 height=20
@@ -748,17 +755,17 @@ style=
 exstyle=
 bgcolour=
 code=
-order=19
+order=13
 tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00061F2E]
+[0x000F1EC0]
 type=radio
 handle=451
 locked=0
 resize=804
-x=469
+x=470
 y=127
 width=127
 height=20
@@ -781,13 +788,13 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-order=20
-[0x00061F2C]
+order=14
+[0x000D1EC8]
 type=radio
 handle=452
 locked=0
 resize=804
-x=469
+x=470
 y=154
 width=127
 height=20
@@ -810,13 +817,13 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-order=21
-[0x00061F2A]
+order=15
+[0x00361C9C]
 type=input
 handle=453
 locked=0
 resize=804
-x=469
+x=470
 y=182
 width=150
 height=20
@@ -828,27 +835,27 @@ fontattribute=0
 tooltip=Partial or full numbers of the phone.
 bgimage=
 textcolour=0x000000
-id=
+id=$inpPattern
 text=
 state=$GUI_SHOW+$GUI_ENABLE
-style=
+style=$ES_NUMBER
 exstyle=$WS_EX_CLIENTEDGE
 bgcolour=
 code=
-order=22
+order=16
 tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00061F28]
+[0x000A1EA2]
 type=group
 handle=454
 locked=0
 resize=804
-x=456
+x=457
 y=242
 width=180
-height=246
+height=277
 func=
 font=Tahoma
 fontsize=10
@@ -858,23 +865,23 @@ tooltip=
 bgimage=
 textcolour=0x000000
 id=
-text=Rule to Apply
+text=Policy to Apply
 state=$GUI_SHOW+$GUI_ENABLE
 style=$BS_CENTER
 exstyle=
 bgcolour=
 code=
-order=23
+order=17
 tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00061F26]
+[0x00091EA4]
 type=button
 handle=455
 locked=0
 resize=836
-x=492
+x=493
 y=565
 width=100
 height=30
@@ -898,12 +905,12 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00061F24]
+[0x00101EC2]
 type=button
 handle=456
 locked=0
 resize=836
-x=492
+x=493
 y=655
 width=100
 height=30
@@ -926,13 +933,13 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-order=25
-[0x00061F22]
+order=26
+[0x000B1EA8]
 type=button
 handle=457
 locked=0
 resize=836
-x=492
+x=493
 y=611
 width=100
 height=30
@@ -955,14 +962,14 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-order=26
-[0x00071F20]
+order=25
+[0x000A1EA6]
 type=radio
 handle=458
 locked=0
 resize=804
-x=477
-y=281
+x=478
+y=271
 width=119
 height=20
 func=
@@ -973,25 +980,25 @@ fontattribute=0
 tooltip=
 bgimage=
 textcolour=0x000000
-id=$radRuleWhiteList
+id=$radPolicyWhiteList
 text=White List
 state=$GUI_SHOW+$GUI_ENABLE
 style=
 exstyle=
 bgcolour=
 code=
-order=27
+order=18
 tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00081F1E]
+[0x000C1ED6]
 type=radio
 handle=459
 locked=0
 resize=804
-x=477
-y=372
+x=478
+y=395
 width=119
 height=20
 func=
@@ -1002,7 +1009,7 @@ fontattribute=0
 tooltip=
 bgimage=
 textcolour=0x000000
-id=$radRuleDisconnect
+id=$radPolicyDisconnect
 text=Disconnect
 state=$GUI_SHOW+$GUI_ENABLE
 style=
@@ -1013,14 +1020,14 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-order=29
-[0x00071F1C]
+order=21
+[0x000D1ED8]
 type=radio
 handle=460
 locked=0
 resize=804
-x=477
-y=407
+x=478
+y=430
 width=119
 height=20
 func=
@@ -1031,7 +1038,7 @@ fontattribute=0
 tooltip=
 bgimage=
 textcolour=0x000000
-id=$radRuleFakeFax
+id=$radPolicyFakeFax
 text=Fake Fax
 state=$GUI_SHOW+$GUI_ENABLE
 style=
@@ -1042,14 +1049,14 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-order=30
-[0x00061F1A]
+order=22
+[0x00101EDA]
 type=radio
 handle=461
 locked=0
 resize=804
-x=477
-y=449
+x=478
+y=472
 width=119
 height=20
 func=
@@ -1060,8 +1067,8 @@ fontattribute=0
 tooltip=
 bgimage=
 textcolour=0x000000
-id=$radRuleLenny
-text=It's Lenny
+id=$radPolicyPhilip
+text=It's Philip
 state=$GUI_SHOW+$GUI_ENABLE
 style=
 exstyle=
@@ -1071,13 +1078,13 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-order=31
-[0x009A1F78]
+order=23
+[0x00121D1E]
 type=group
 handle=462
 locked=0
 resize=804
-x=475
+x=476
 y=72
 width=163
 height=114
@@ -1096,17 +1103,17 @@ style=$BS_CENTER
 exstyle=
 bgcolour=
 code=
-order=32
+order=1
 tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00BA1C4C]
+[0x00101D20]
 type=label
 handle=463
 locked=0
 resize=804
-x=490
+x=491
 y=102
 width=141
 height=62
@@ -1125,17 +1132,17 @@ style=
 exstyle=
 bgcolour=-2
 code=
-order=33
+order=2
 tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00A320EE]
+[0x000B1ECA]
 type=button
 handle=464
 locked=0
 resize=
-x=480
+x=481
 y=202
 width=151
 height=28
@@ -1154,17 +1161,17 @@ style=
 exstyle=
 bgcolour=
 code=
-order=32
+order=3
 tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x007317A8]
+[0x000D1D3A]
 type=checkbox
-handle=472
+handle=465
 locked=0
 resize=
-x=40
+x=41
 y=121
 width=188
 height=20
@@ -1183,17 +1190,17 @@ style=
 exstyle=
 bgcolour=
 code=
-order=40
+order=31
 tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x003E207C]
+[0x00121D2C]
 type=input
-handle=481
+handle=466
 locked=0
 resize=802
-x=158
+x=159
 y=212
 width=77
 height=23
@@ -1212,17 +1219,17 @@ style=
 exstyle=$WS_EX_CLIENTEDGE
 bgcolour=
 code=
-order=41
+order=34
 tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00901F06]
+[0x00101D42]
 type=label
-handle=482
+handle=467
 locked=0
 resize=802
-x=59
+x=60
 y=214
 width=49
 height=25
@@ -1241,17 +1248,17 @@ style=
 exstyle=
 bgcolour=-2
 code=
-order=42
+order=33
 tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00842032]
+[0x000D1ED0]
 type=group
-handle=483
+handle=468
 locked=0
 resize=802
-x=48
+x=49
 y=177
 width=200
 height=160
@@ -1270,17 +1277,17 @@ style=$BS_CENTER
 exstyle=
 bgcolour=
 code=
-order=43
+order=32
 tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00861F48]
+[0x001F02DA]
 type=input
-handle=484
+handle=469
 locked=0
 resize=802
-x=158
+x=159
 y=252
 width=77
 height=23
@@ -1303,13 +1310,13 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-order=44
-[0x00141E46]
+order=36
+[0x00091EB4]
 type=label
-handle=485
+handle=470
 locked=0
 resize=802
-x=61
+x=62
 y=254
 width=89
 height=25
@@ -1332,13 +1339,13 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-order=45
-[0x001E16C6]
+order=35
+[0x000A1E96]
 type=button
-handle=486
+handle=471
 locked=0
 resize=
-x=520
+x=521
 y=64
 width=100
 height=30
@@ -1357,17 +1364,17 @@ style=
 exstyle=
 bgcolour=
 code=
-order=46
+order=42
 tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x002B16C4]
+[0x00091E90]
 type=input
-handle=487
+handle=472
 locked=0
 resize=802
-x=158
+x=159
 y=290
 width=77
 height=23
@@ -1390,13 +1397,13 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-order=47
-[0x00351682]
+order=38
+[0x00091E78]
 type=label
-handle=488
+handle=473
 locked=0
 resize=802
-x=61
+x=62
 y=292
 width=89
 height=25
@@ -1419,5 +1426,121 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-order=48
+order=37
+[0x000A1E7C]
+type=button
+handle=474
+locked=0
+resize=836
+x=510
+y=467
+width=100
+height=30
+func=
+font=Tahoma
+fontsize=10
+fontstyle=400
+fontattribute=0
+tooltip=Pick up the phone then play a warning message and disconnect.
+bgimage=
+textcolour=0x000000
+id=$btnWarning
+text=Warning
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=
+code=
+tabpage=0
+iconindex=
+iconlarge=0
+textmode=text
+order=7
+[0x00091E82]
+type=radio
+handle=475
+locked=0
+resize=804
+x=478
+y=358
+width=119
+height=20
+func=
+font=Tahoma
+fontsize=10
+fontstyle=400
+fontattribute=0
+tooltip=
+bgimage=
+textcolour=0x000000
+id=$radPolicyWarning
+text=Warning
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=
+code=
+tabpage=1
+iconindex=
+iconlarge=0
+textmode=text
+order=20
+[0x00091E80]
+type=radio
+handle=476
+locked=0
+resize=804
+x=478
+y=306
+width=119
+height=20
+func=
+font=Tahoma
+fontsize=10
+fontstyle=400
+fontattribute=0
+tooltip=
+bgimage=
+textcolour=0x000000
+id=$radPolicyNone
+text=No Policy
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=
+code=
+tabpage=1
+iconindex=
+iconlarge=0
+textmode=text
+order=19
+[0x000A1E7E]
+type=input
+handle=477
+locked=0
+resize=836
+x=491
+y=341
+width=130
+height=24
+func=
+font=Tahoma
+fontsize=12
+fontstyle=400
+fontattribute=0
+tooltip=The phone number to apply policy to. Or you can click on one on the left.
+bgimage=
+textcolour=0x000000
+id=$inpNumber
+text=
+state=$GUI_SHOW+$GUI_ENABLE
+style=$ES_NUMBER
+exstyle=$WS_EX_CLIENTEDGE
+bgcolour=
+code=
+order=5
+tabpage=0
+iconindex=
+iconlarge=0
+textmode=text
 #ce
