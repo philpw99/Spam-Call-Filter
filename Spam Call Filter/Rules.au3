@@ -167,7 +167,7 @@ Func RuleFakeFax( )
 	SendCommand("AT+FCLASS=1") 	; Get in fax mode
 	AddLine( "Modem Answer:" & SendCommand("ATA"))			; Answer
 	WaitReceiveLines($iTimeLimit)	; Wait 30 seconds to receive any thing.
-	AddLine("Hangup:" & SendCommand("ATH") ) ; Hang up
+	HangUp()
 	SendCommand("AT+FCLASS=8") 	; Get back to voice mode
 EndFunc
 
@@ -177,8 +177,7 @@ Func RuleDisconnect( )
 	AddLine("Doing Disconnect...")
 	AddLine( "Modem Pickup:" & SendCommand("AT+VLS=5") )	; Modem pick up, Internal speaker connected to the line.
 	WaitReceiveLines($iTimeLimit)
-	AddLine( "Modem On Hook:" & SendCommand("AT+VLS=0") )	; Modem off hook
-	AddLine( "Modem Hang Up:" & SendCommand("ATH") )		; Hang up just in case.
+	HangUp()
 EndFunc
 
 Func RuleIsPhilip()
@@ -189,11 +188,9 @@ Func RuleIsPhilip()
 	
 	PlayWav( @ScriptDir & "\out.wav")
 	WaitReceiveLines(5000) ; Wait 5 seconds for other side to start talking.
-	WaitForSilence()	; Now let the other side talk.
+	; WaitForSilence()	; Now let the other side talk.  It's bad. Wait too long.
 	
-	AddLine( "Modem On Hook:" & SendCommand("AT+VLS=0") )	; Modem off hook
-	AddLine( "Modem Hang Up:" & SendCommand("ATH") )		; Hang up just in case.
-
+	HangUp()
 EndFunc
 
 Func WaitForSilence($iTimeOut = 30000)
@@ -206,7 +203,7 @@ Func WaitForSilence($iTimeOut = 30000)
 		$instr = _Commgetstring()
 		If $instr <> "" Then
 			$str = StringLeft($instr, 2)
-			If $str = Chr(16) & Chr(3) Or $str = Chr(16) & "b" Then return
+			If $str = $gsCodeBusy Then return
 		EndIf
 		Sleep(20)
 	Wend	

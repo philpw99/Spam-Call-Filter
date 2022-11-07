@@ -19,36 +19,7 @@
 #include <Array.au3>
 
 #Region Initial Globals
-; All registry settings stored here.
-Global $gsRegBase = "HKEY_CURRENT_USER\Software\SpamCallFilter"
-Global $oModem = ObjCreate("Scripting.Dictionary")
-; Not monitor yet.
-Global $gbCallMonitor = False, $gbLineProcessing = False, $gbRinging = False, $gbOnHook = True
-
-; AppData folder
-Global $gsAppDir = @AppDataDir & "\SpamCallFilter"
-If Not FileExists($gsAppDir) Then 
-	DirCreate($gsAppDir)
-EndIf
-
-; Ringing code
-Global $gsCodeRing = RegRead($gsRegBase, "CodeRing")
-If @error Then 
-	$gsCodeRing = Chr(16) & "R"
-	RegWrite($gsRegBase, "CodeRing", "REG_SZ", $gsCodeRing)
-EndIf
-
-; Caller id number code
-Global $gsCodeCIDNumber = RegRead($gsRegBase, "CodeCIDNumber")
-If @error Then 
-	$gsCodeCIDNumber = "NMBR"
-	RegWrite($gsRegBase, "CodeCIDNumber", "REG_SZ", $gsCodeCIDNumber)
-EndIf
-
-Global $gaRules[0][2]		; Data for $lvRuleList]]
-Enum $RULE_PATTERN, $RULE_POLICY
-
-Global $giCurrentRuleIndice, $giCurrentPhoneCallIndice
+#include "Globals.au3"
 #EndRegion Globals
 
 #include "Disclaimer.au3"
@@ -103,6 +74,13 @@ _CommSetXonXoffProperties(11, 13, 100, 100)
 ; Start event mode
 Events()
 
+; Auto monitor
+Local $iAutoStart = RegRead($gsRegBase, "AutoMonitor")
+If Not @error And $iAutoStart = 1 Then 
+	StartMonitor()
+EndIf
+
+
 Global $ghTimer = TimerInit()
 While True
     ;sleep(40)
@@ -112,7 +90,7 @@ While True
 
     If $instr <> '' Then ;if we got something
 		If StringStripWS($instr,3) <> "" Then
-			If $gbCallMonitor And Not $gbLineProcessing Then 
+			If $gbCallMonitor Then 
 				ProcessLine($instr)
 			EndIf
 			AddLine($instr)
@@ -136,17 +114,20 @@ Alldone()
 
 Func Events()
     Opt("GUIOnEventMode", 1)
+	; Test 
+	GUICtrlSetOnEvent($btnTest, "TestLine")
+	; Buttons.
     GUISetOnEvent($GUI_EVENT_CLOSE, "AllDone")
     GUICtrlSetOnEvent($btnSend, "EventSend")
     GUICtrlSetOnEvent($btnSetPort, "EventSetPort")
 	GUISetOnEvent($GUI_EVENT_RESIZED, "RememberSize")
 	GUICtrlSetOnEvent($btnMonitor, "StartMonitor")
-	GUICtrlSetOnEvent($btnTest, "RuleIsPhilip")
 	GUICtrlSetOnEvent($btnWhiteList, "RuleAddWhiteList")
 	GUICtrlSetOnEvent($btnWarning, "RuleAddWarning")
 	GUICtrlSetOnEvent($btnDisconnect, "RuleAddDisconnect")
 	GUICtrlSetOnEvent($btnFakeFax, "RuleAddFakeFax")
-	GUICtrlSetOnEvent($btnPhilip, "RuleAddPhilip")
+	GUICtrlSetOnEvent($btnPhilip, "RuleIsPhilip")
+	GUICtrlSetOnEvent($chkAutoMonitor, "SetAutoMonitor")
 EndFunc   ;==>Events
 
 Func DoEverySecond()
@@ -169,10 +150,25 @@ Func DoEverySecond()
 				$giCurrentRuleIndice = $iRow
 			EndIf
 	EndSwitch 
-	
-	
 EndFunc
 
+Func SetAutoMonitor()
+	If GUICtrlRead($chkAutoMonitor) = $GUI_CHECKED Then 
+		RegWrite($gsRegBase, "AutoMonitor", "REG_DWORD", 1)
+	Else
+		RegWrite($gsRegBase, "AutoMonitor", "REG_DWORD", 0)
+	EndIf
+EndFunc
+
+
+Func TestLine()
+	; Pickup the line then get code.
+	AddLine("Doing Test Line...")
+	AddLine( "Modem Pickup:" & SendCommand("AT+VLS=5") )	; Modem pick up, Internal speaker connected to the line.
+	WaitReceiveLines(30000)
+	AddLine( "Modem On Hook:" & SendCommand("AT+VLS=0") )	; Modem off hook
+	AddLine( "Modem Hang Up:" & SendCommand("ATH") )		; Hang up just in case.
+EndFunc
 
 Func Bingo()
 	MsgBox(0, "Bingo", "Bingo")
@@ -197,31 +193,93 @@ EndFunc
 
 Func ProcessLine($sLine)
 	; When doing monitor. The info will come here in lines.
-	$gbLineProcessing = True
 	c("Line:" & $sLine)
 	Switch $sLine
-		
+	
 		Case $gsCodeRing
 			; Line is ringing
-			$gbRinging = True
-			
-		Case Else
-			If $gbRinging Then 
-				If StringLeft($sLine, 4) = $gsCodeCIDNumber Then 
-					$sNumber = GetValueBySep( $sLine, " = ")
-					ProcessNumber($sNumber)
-				EndIf
+			If $gbRinging = False Then
+				; The ringing just started. Reset the values.
+				$gbRinging = True
+				$gbLineProcessed = False
+				Global $gaCurrentCall = ["", "", "", "", ""]
 			EndIf
-
+				
+		Case $gsCodeBusy
+			; Line is busy or disconnected
+			$gbRinging = False
+			$gbLineProcessed = False
+			Global $gaCurrentCall = ["", "", "", "", ""]
+		
+		Case Else
+			If $gbRinging And Not $gbLineProcessed Then
+				c("Process line:" & $sLine)
+				Switch GetValueBySep($sLine, " = " )	; Get the value on the left side of =
+					Case $gsCodeDate
+						$gaCurrentCall[$CALL_DATE] = GetValueBySep($sLine, " = ", 2) ; Get the value on the right side of =
+					Case $gsCodeTime
+						$gaCurrentCall[$CALL_TIME] = GetValueBySep($sLine, " = ", 2)
+					Case $gsCodeNumber
+						$gaCurrentCall[$CALL_NUMBER] = GetValueBySep($sLine, " = ", 2)
+					Case $gsCodeName
+						$gaCurrentCall[$CALL_NAME] = GetValueBySep($sLine, " = ", 2)
+						; Now the name is entered. Time to process this phone.
+						ProcessCall()
+						$gbLineProcessed = True		; This call is processed. The following ring and call id will be ignored.
+				EndSwitch
+			EndIf
 	EndSwitch
-	
-	$gbLineProcessing = False
 EndFunc
 
-Func ProcessNumber($sNumber)
-	; Here will look up the number then process it with rules.
-	
+Func HangUp()
+	AddLine( "Modem On Hook:" & SendCommand("AT+VLS=0") )	; Modem off hook
+	AddLine( "Modem Hang Up:" & SendCommand("ATH") )		; Hang up just in case.
+	$gbRinging = False
+	$gbLineProcessed = False
+	Global $gaCurrentCall = ["", "", "", "", ""]			; Clear the current call.
 EndFunc
+
+Func ProcessCall()
+	; Here will look up the number then process it with rules.
+	; The phone info is in $gaCurrentCall[5]
+	Local $bRuleFound = False 
+	Local $sNumber = $gaCurrentCall[$CALL_NUMBER]
+	For $i = 0 To UBound($gaRules)-1
+		; Have to process the rules one by one
+		If PatternFits( $sNumber, $gaRules[$i][$RULE_PATTERN] ) Then 
+			ApplyRule($gaRules[$i][$RULE_POLICY])
+			$bRuleFound = True 
+			ExitLoop 
+		EndIf
+	Next
+	If Not $bRuleFound Then ApplyNone()
+EndFunc
+
+Func ApplyRule($sPolicy)
+	; Apply rule with the current phone call
+	$gaCurrentCall[$CALL_POLICYAPPLIED] = $sPolicy
+	_GUICtrlListView_AddArray($lvPhoneCalls, $gaCurrentCall)
+EndFunc
+
+Func ApplyNone()
+	$gaCurrentCall[$CALL_POLICYAPPLIED] = "None"
+	_GUICtrlListView_AddArray($lvPhoneCalls, $gaCurrentCall)
+EndFunc
+
+
+Func PatternFits($sNumber, $sPattern)
+	If $sNumber = $sPattern Then Return True 	; Check Exactly first
+	
+	If StringRight($sPattern, 1) = "*" Then ; Starts with
+		If StringLeft($sNumber, StringLen($sPattern)-1) & "*" = $sPattern Then Return True
+	ElseIf StringLeft($sPattern, 1) = "*" Then ; Ends with
+		If "*" & StringRight($sNumber, StringLen($sPattern) -1) = $sPattern Then Return True
+	EndIf
+	
+	Return False
+EndFunc
+
+
 
 Func GetValueBySep($str, $sep, $occur = 1)
 	; return the value seperated by $sep
@@ -245,7 +303,10 @@ Func StartMonitor()
 		GUICtrlSetData($btnMonitor, "Stop Call Monitor")
 		GUICtrlSetData($lbStatus, "Monitoring.")
 	EndIf
-	
+	; Reset the ring status.
+	$gbRinging = False
+	$gbLineProcessed = False
+	Global $gaCurrentCall = ["", "", "", "", ""]
 EndFunc
 
 Func RememberSize()
@@ -351,7 +412,7 @@ Func AddLine($Line)
 	If $iLen = 0 Then
 		_GUICtrlEdit_AppendText($edReceived, $Line)
 	Else
-		_GUICtrlEdit_AppendText($edReceived, @CRLF & $Line)	; Append new line
+		_GUICtrlEdit_AppendText($edReceived, "<|" & @CRLF & $Line)	; Append new line
 	EndIf
 
 ;~ 	_GUICtrlEdit_SetSel($edReceived, $iLen+1, -1)	; Select the last line
