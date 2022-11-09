@@ -1,8 +1,115 @@
-; SetModemPort
-; Input: "New" as new selction "COM1" as the port to set.
-; Return true when the port is set
-; Return false if fails.
+Func BgReceive()
+	; This is the Adlib function to receive voice data in the background
+	; It should be called every 100 ms, because every second is 8000 bytes
+	; Each time it will process 800 bytes.
+	; Global flags : $gfKeyPressed, $gsKeyPressed, $gfRing, $gfDataEnd, $gfBufferOverrun, $gfBufferUnderrun, $gfHangUp, $gfBusy, $gfDialTone
+	; Global receive String: $gsReceiveBuffer
+	; To end the duplex transmission, send modem <DLE><^>, or modem will end it after long time silence.
+	; The modem will also send <DLE>Chr(3) to indicate voice data end. In that case, this function will not receive until the flag is clear.
+	; However, even data is ended. It will still monitoring the receive data and set flags, until the function got unregistered.
+	Local $sReceive = _Commgetstring()
+	If @error Or $sReceive = "" Then Return
+	
+	; Handle all Chr(16) in the string.
+	While True
+		Local $iPos = StringInStr($sReceive, Chr(16), 1 )
+		If $iPos = 0 Then 
+			; No more Chr(16), add whole string to the buffer
+			If Not $gfDataEnd Then 
+				$gsReceiveBuffer &= $sReceive
+			EndIf
+			$sReceive = ""
+			ExitLoop 
+		EndIf
+		; Have some commands
+		Local $Char = StringMid($sReceive, $iPos + 1, 1)	; get the command
+		Switch $Char
+			Case Chr(16)		; Just an escaped Chr(16))
+				If Not $gfDataEnd Then 
+					$gsReceiveBuffer &= StringLeft($sReceive, $iPos) 	; Add the front string) and 1 chr(16)
+				EndIf
+				$sReceive = StringTrimLeft($sReceive, $iPos + 1)	; Remove the front plus 2 Chr(16)
+			
+			Case Chr(26)		; two chr(16) for data)
+				If Not $gfDataEnd Then 
+					$gsReceiveBuffer &= StringLeft($sReceive, $iPos) & Chr(16)	; Add the front string)) and 2 chr(16)
+				EndIf
+				$sReceive = StringTrimLeft($sReceive, $iPos + 1)	; Remove the front plus 2 Chr(16)
+			
+			Case Chr(3)			; Data end
+				If Not $gfDataEnd Then 
+					$gsReceiveBuffer &= StringLeft($sReceive, $iPos-1)	; Add the front string only
+				EndIf
+				$sReceive = StringTrimLeft($sReceive, $iPos + 1)
+				$gfDataEnd = True
+			
+			Case "0" To "9", "*", "#"		; DTMF Tones
+				If Not $gfDataEnd Then 
+					$gsReceiveBuffer &= StringLeft($sReceive, $iPos-1)
+				EndIf
+				$gfKeyPressed = True
+				$gsKeyPressed &= $Char		; Add the pressed key to the key buffer
+				$sReceive = StringTrimLeft($sReceive, $iPos + 1)	
+				
+			Case "o"		; Buffer over run
+				If Not $gfDataEnd Then 
+					$gsReceiveBuffer &= StringLeft($sReceive, $iPos-1)
+				EndIf
+				$gfBufferOverrun = True 
+				$sReceive = StringTrimLeft($sReceive, $iPos + 1)
+
+			Case "u"		; Buffer under run
+				If Not $gfDataEnd Then 
+					$gsReceiveBuffer &= StringLeft($sReceive, $iPos-1)
+				EndIf
+				$gfBufferUnderrun = True 
+				$sReceive = StringTrimLeft($sReceive, $iPos + 1)
+				
+			Case "s", "q", "I", "J"	; Long time silence, presume hang up or signals indicate hangup or bad line
+				If Not $gfDataEnd Then 
+					$gsReceiveBuffer &= StringLeft($sReceive, $iPos-1)
+				EndIf
+				$gfHangUp = True
+				
+			
+			Case "r"	; Ringing. The call must have disconnected somehow.
+				$gfRing = True
+				If Not $gfDataEnd Then 
+					$gsReceiveBuffer &= StringLeft($sReceive, $iPos-1)
+				EndIf
+				$sReceive = StringTrimLeft($sReceive, $iPos + 1)
+				
+			Case "b"	; Busy. The call must have disconnected somehow.
+				$gfBusy = True
+				If Not $gfDataEnd Then 
+					$gsReceiveBuffer &= StringLeft($sReceive, $iPos-1)
+				EndIf
+				$sReceive = StringTrimLeft($sReceive, $iPos + 1)
+
+			Case "d"	; Dial tone.
+				$gfDialTone = True
+				If Not $gfDataEnd Then 
+					$gsReceiveBuffer &= StringLeft($sReceive, $iPos-1)
+				EndIf
+				$sReceive = StringTrimLeft($sReceive, $iPos + 1)
+				
+			Case Else 	; Not this program's concern
+				If Not $gfDataEnd Then 
+					$gsReceiveBuffer &= StringLeft($sReceive, $iPos-1)
+				EndIf
+				$sReceive = StringTrimLeft($sReceive, $iPos + 1)
+				
+		EndSwitch
+	Wend
+	; Finish processing $sReceive
+	
+EndFunc
+
+
 Func SetModemPort($sPortName)
+	; Input: "New" as new selction "COM1" as the port to set.
+	; Return true when the port is set
+	; Return false if fails.
 	If $sPortName <> "NEW" Then 
 		; Set the port then return
 		$sErr = SetPort($sPortName)

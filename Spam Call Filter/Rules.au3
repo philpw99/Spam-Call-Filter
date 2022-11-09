@@ -314,35 +314,101 @@ Func WaitForSilence()
 	; AddLine("Wait for silence.")
 	_CommSendString("AT+VRX" & @CR)
 
-	Local $aData[8000]	; Voice data in 1 second.
-	$iThreshold = 50 * 8000	; average data is below 50
-	Local $i = 0, $iTotal = 0, $iCount = 0
-	Local $hTimer = TimerInit()
-	While TimerDiff($hTimer) < $iTimeOut
-		$byte = _CommReadChar()
-		If $byte <> -1 Then
-			$byte = Asc($byte)	; Convert it to int.
-			$iCount += 1	; Total bytes read
-			If $iCount > 8000 Then 
-				$i = Mod($iCount, 8000)
-			EndIf 
+	InitReceiveFlags()				; Reset all receive global flags
 
-			$iTotal = $iTotal - $aData[$i] + $byte
-			$aData[$i] = $byte
-				
-			
-			If Asc($byte)=16 Then
-				$byte = _CommReadByte()
-				$i += 1
-				If Asc($byte) = 3 Then
-					ExitLoop 
+	$iBufferSize = 80001				; Voice data in 10 second.
+	Local $aData[$iBufferSize]	
+	Local $iThreshold = 50 * 8000	; average data is below 50
+	Local $iTotalCount = 0			; iTotalCount is count of all the data received
+	Local $iPos = 0					; iPos is the current position in the data array.
+	Local $iTotal = 0				; iTotal is the voice data numeric total.
+	Local $hTimer = TimerInit()
+	Local $iMax = 0
+	While TimerDiff($hTimer) < $iTimeOut
+		Local $sPiece = _Commgetstring()
+		If $sPiece <> "" Then
+			; Convert to numbers in batch
+			Local $aPiece = StringToASCIIArray($sPiece, Default , Default , 1 )
+			Local $iLen = UBound($aPiece)
+			Local $i = -1		; $i is the position in $aPiece
+			While True 
+				; Loop through all numbers
+				$i += 1		
+				If $i >= $iLen Then ExitLoop 
+				If $aPiece[$i] = Chr(16) Then 
+					Switch $aPiece[$i + 1]
+						Case 16		; double Chr(16) count as a single Chr(16)
+							$i += 1
+						Case 26		; 26 means 2 chr(16), so annoying, just count as one chr(16) to simplify things
+							$i += 1
+							$aPiece[$i] = Chr(16)
+						Case 35, 42, 48 to 57 	; DTMF tones
+							$gfKeyPressed = True 
+							$gsKeyPressed &= Chr($aPiece[$i+1])
+							$i += 2		; skip those 2 char
+							c(Chr(16) & $aPiece[$i + 1])
+						Case 111		; Buffer overrun
+							$gfBufferOverrun = True 
+							$i += 2
+							c(Chr(16) & $aPiece[$i + 1])
+						Case 108, 113, 115	; Time out or hung up
+							$gfHangUp = True 
+							$i += 2
+							c(Chr(16) & $aPiece[$i + 1])
+						Case 114			; Ringing ? ?
+							$gfRing = True 
+							$i += 2
+							c(Chr(16) & $aPiece[$i + 1])
+						Case 98				; Busy tone, maybe hung up
+							$gfBusy = True
+							$i += 2
+							c(Chr(16) & $aPiece[$i + 1])
+						Case 100			; Dial tone
+							$gfDialTone = True
+							$i += 2
+							c(Chr(16) & $aPiece[$i + 1])
+						Case 117			; Buffer underrun
+							$gfBufferUnderrun = True
+							$i += 2
+							c(Chr(16) & $aPiece[$i + 1])
+						Case Else 			; Don't care
+							$i += 2
+					EndSwitch
 				EndIf
-			EndIf
+				
+				; Finish filtered out special commands
+				Local $iChar = $aPiece[$i] 
+				$iChar = Abs($iChar - 128)	; For signed PCM signal
+				If $iChar > $iMax Then $iMax = $iChar
+				$iTotalCount += 1
+				If $iTotalCount >= $iBufferSize Then 
+					$iPos = Mod( $iTotalCount, $iBufferSize)
+					$iTotal = $iTotal - $aData[$iPos] + $iChar		; Remove the last queue and add the new one
+					$aData[$iPos] = $iChar			; Set the new data
+				Else 
+					; buffer not filled yet
+					$iPos = $iTotalCount
+					$iTotal += $iChar
+					$aData[$iPos] = $iChar
+				EndIf
+				
+			Wend
+			
 		EndIf
 	Wend
-	c("total byte:" & $i)
 	_CommSendByte(16)
 	_CommSendByte(33) ; receive abort.
 	AddLine("modem on hook:" & SendCommand("AT+VLS=0") )
 	HangUp()
+	c("total byte:" & $iTotalCount)
+	Local $dAverage
+	If $iTotalCount > $iBufferSize Then 
+		$dAverage = $iTotal / $iBufferSize
+	Else 
+		$dAverage = $iTotal / $iTotalCount
+	EndIf
+	c("Average value in buffer:" & $dAverage)
+	c("Max char value:" & $iMax)
 EndFunc
+
+

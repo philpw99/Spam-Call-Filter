@@ -125,26 +125,32 @@ EndFunc
 
 
 Func SendData( $lpVoice, $iLength = 1024)
-	; c("lpVoice:" & Hex($lpVoice))
 	; Send binary data with Send String Method.
 	; Do not send <DLE> codes here. In fact, all <DLE> in the data will be changed.
-
 	$sData = DllStructGetData( DllStructCreate("CHAR[" & $iLength & "]", $lpVoice), 1)	; Get the string from data
 	$sData = StringReplace($sData, Chr(16), Chr(17))	; no chr(16) should be in the voice data.
-	; $stuNewData = DllStructCreate("CHAR[" & $iLength & "]")
-	; DllStructSetData($stuNewData, 1, $sData)
-	; Local $lpData = DllStructGetPtr($stuNewData, 1)
 	_CommSendString($sData)
+EndFunc
+
+Func WaitForUnderBufferBG($iTimeOut = 5000)
+	; This is for duplex voice mode. Need BGReceive() running in the background.
+	Local $hTimer = TimerInit()
+	While TimerDiff($hTimer) < $iTimeOut
+		If $gfBufferUnderrun Then Return
+		Sleep(1)
+	Wend
 EndFunc
 
 
 Func WaitForUnderBuffer($iTimeOut = 5000)
 	; Read input for underbuffer
+	; This is for normal wav playback, not for background transmission.
 	Local $hTimer = TimerInit()
 	While TimerDiff($hTimer) < $iTimeOut
 		$instr = _Commgetstring()
 		If $instr <> "" Then
 			If StringLeft($instr, 2) = Chr(16) & "u" Then return
 		EndIf
+		Sleep(1)
 	Wend
 EndFunc

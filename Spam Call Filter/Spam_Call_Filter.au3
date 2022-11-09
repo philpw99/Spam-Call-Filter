@@ -39,18 +39,18 @@ Global $guiMain = GUICreate( GuiTitle(),671,723,-1,-1,BitOr($WS_SIZEBOX,$WS_SYSM
 ;~ EndIf 
 
 ; Set the last column widths
-Local $sWidth = RegRead($gsRegBase, "PhoneListWidth")
+Global $gsPhoneListWidth = RegRead($gsRegBase, "PhoneListWidth")
 If Not @error Then 
-	Local $aWidth = StringSplit($sWidth, "|", $STR_NOCOUNT )
+	Local $aWidth = StringSplit($gsPhoneListWidth, "|", $STR_NOCOUNT )
 	_GUICtrlListView_SetColumnWidth($lvPhoneCalls, 0, Int($aWidth[0]) )
 	_GUICtrlListView_SetColumnWidth($lvPhoneCalls, 1, Int($aWidth[1]) )
 	_GUICtrlListView_SetColumnWidth($lvPhoneCalls, 2, Int($aWidth[2]) )
 	_GUICtrlListView_SetColumnWidth($lvPhoneCalls, 3, Int($aWidth[3]) )
 	_GUICtrlListView_SetColumnWidth($lvPhoneCalls, 4, Int($aWidth[4]) )
 EndIf
-Local $sWidth = RegRead($gsRegBase, "RuleListWidth")
+Global $gsRuleListWidth = RegRead($gsRegBase, "RuleListWidth")
 If Not @error Then 
-	Local $aWidth = StringSplit($sWidth, "|", $STR_NOCOUNT )
+	Local $aWidth = StringSplit($gsRuleListWidth, "|", $STR_NOCOUNT )
 	_GUICtrlListView_SetColumnWidth($lvRuleList, 0, Int($aWidth[0]) )
 	_GUICtrlListView_SetColumnWidth($lvRuleList, 1, Int($aWidth[1]) )
 EndIf
@@ -171,8 +171,10 @@ Func Events()
 	; Log Tab
     GUICtrlSetOnEvent($btnSend, "EventSend")
 	GUICtrlSetOnEvent($btnClear, "ClearReceived")
-	GUICtrlSetOnEvent($btnTest, "RuleIsPhilip")
 	GUICtrlSetOnEvent($btnAbout, "EventAbout")
+
+	; Test functions.
+	GUICtrlSetOnEvent($btnTest, "WaitForSilence")
 
 EndFunc   ;==>Events
 
@@ -573,10 +575,14 @@ Func AllDone()
 		& "|" & _GUICtrlListView_GetColumnWidth($lvPhoneCalls, 2) _
 		& "|" & _GUICtrlListView_GetColumnWidth($lvPhoneCalls, 3) _
 		& "|" & _GUICtrlListView_GetColumnWidth($lvPhoneCalls, 4)
-	RegWrite($gsRegBase, "PhoneListWidth", "REG_SZ", $sWidth)
+	If $sWidth <> $gsPhoneListWidth Then 
+		RegWrite($gsRegBase, "PhoneListWidth", "REG_SZ", $sWidth)
+	EndIf 
 	$sWidth = _GUICtrlListView_GetColumnWidth($lvRuleList, 0) _
 		& "|" & _GUICtrlListView_GetColumnWidth($lvRuleList, 1)
-	RegWrite($gsRegBase, "RuleListWidth", "REG_SZ", $sWidth)
+	If $sWidth <> $gsRuleListWidth Then 
+		RegWrite($gsRegBase, "RuleListWidth", "REG_SZ", $sWidth)
+	EndIf
     Exit
 EndFunc   ;==>AllDone
 

@@ -15,6 +15,8 @@ EndIf
 
 Global $gbLineProcessed = False, $gbRinging = False, $gbOnHook = True
 
+; Modem receive data and set the following flags. If no function handles it, it will remain true or not empty.
+
 ; AppData folder
 Global $gsAppDir = @AppDataDir & "\SpamCallFilter"
 If Not FileExists($gsAppDir) Then 
@@ -30,6 +32,9 @@ EndIf
 ; Initial Modem codes
 InitCodes()
 
+; Initialize receive state flags
+InitReceiveFlags()
+
 Global $gaRules[0][2]		; Data for $lvRuleList]]
 Enum $RULE_PATTERN, $RULE_POLICY
 
@@ -42,6 +47,15 @@ Global $gaCurrentCall[5]
 Func GuiTitle()
 	Return "Spam Call Filter v" & $gsVersion
 EndFunc
+
+Func InitReceiveFlags()
+	; Initialize all the global receive flags
+	Global $gfKeyPressed = False, $gsKeyPressed = "", $gfRing = False, $gfDataEnd = False
+	Global $gfBufferOverrun = False, $gfBufferUnderrun = False
+	Global $gfHangUp = False, $gfBusy = False, $gfDialTone = False 
+	Global $gsReceiveBuffer = ""
+EndFunc
+
 
 Func InitCodes()
 	; It will read the registry and set the global codes
