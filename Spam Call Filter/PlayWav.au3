@@ -1,4 +1,5 @@
 Func PlayWav($sFile)
+
 	If Not FileExists($sFile) Then Return SetError(1)
 
 	; Just a dummy variable I need for WINAPI_ReadFile
@@ -73,6 +74,7 @@ Func PlayWav($sFile)
 	; Amount of samples is calculated with the total size of the raw audio data divided by the size of each sample
 	$Data = DllStructCreate("byte [" & ( DllStructGetData($WAVE_HEADER, "Subchunk2Size") ) & "]")
 	$lpData = DllStructGetPtr($Data)
+	; c("lpData:" & Hex($lpData))
 	_WinAPI_ReadFile($fhandle, $lpData, DllStructGetData($WAVE_HEADER, "Subchunk2Size"), $NULL)
 
 	; No more reading, the entire file is in memory!
@@ -87,33 +89,61 @@ Func PlayWav($sFile)
 	
 	AddLine("Start playing file:" & $sFile)
 	
-	; Transmit 1024 bytes at a time.
-	If $iSize <= 1024 Then 
-		_CommSendByteArray( $lpData, $iSize, 0 )
+	; Clear transmit buffer
+	_CommSendByte(16)
+	_CommSendByte(24)
+	
+	Local $iTransferSize = 1024
+	; Transmit 1024 bytes at a time. The buffer is 2048 only.
+	If $iSize <= $iTransferSize Then 
+		SendData( $lpData, $iSize )
+		; _CommSendByteArray($lpData, $iSize, 0)
 		If @error Then c("Error sending data.")
 	Else
-		For $i = 0 To Floor($iSize / 1024)
-			_CommSendByteArray( $lpData, 1024, 0 )	; Send 1024 data at a time
+		For $i = 0 To Floor($iSize / $iTransferSize )
+			SendData( $lpData )	; Send 1024 data at a time
+			; _CommSendByteArray($lpData, 1024, 0)
 			If @error Then
 				c("Error sending data when i=" & $i)
 				ExitLoop
 			EndIf
-			$lpData += 1024
+			$lpData += $iTransferSize
 			WaitForUnderBuffer()
 		Next
-		_CommSendByteArray( $lpData, Mod ($iSize, 1024), 0 )	; Send the rest of data.
+		; _CommSendByteArray($lpData, Mod ($iSize, 1024) , 0)
+		SendData( $lpData, Mod ($iSize, $iTransferSize) )	; Send the rest of data.
 		If @error Then c("Error sending data at the last batch." )
 	EndIf
 	
+	; Send end signal
+	_CommSendByte(16)
+	_CommSendByte(3)
+	
 	AddLine( "Voice transmission done.")
 EndFunc 
+	
+
+
+Func SendData( $lpVoice, $iLength = 1024)
+	; c("lpVoice:" & Hex($lpVoice))
+	; Send binary data with Send String Method.
+	; Do not send <DLE> codes here. In fact, all <DLE> in the data will be changed.
+
+	$sData = DllStructGetData( DllStructCreate("CHAR[" & $iLength & "]", $lpVoice), 1)	; Get the string from data
+	$sData = StringReplace($sData, Chr(16), Chr(17))	; no chr(16) should be in the voice data.
+	; $stuNewData = DllStructCreate("CHAR[" & $iLength & "]")
+	; DllStructSetData($stuNewData, 1, $sData)
+	; Local $lpData = DllStructGetPtr($stuNewData, 1)
+	_CommSendString($sData)
+EndFunc
+
 
 Func WaitForUnderBuffer($iTimeOut = 5000)
 	; Read input for underbuffer
 	Local $hTimer = TimerInit()
 	While TimerDiff($hTimer) < $iTimeOut
 		$instr = _Commgetstring()
-		If $instr <> "" Then 
+		If $instr <> "" Then
 			If StringLeft($instr, 2) = Chr(16) & "u" Then return
 		EndIf
 	Wend

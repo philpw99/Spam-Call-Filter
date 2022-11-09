@@ -1,5 +1,5 @@
 ; -- Created with ISN Form Studio 2 for ISN AutoIt Studio -- ;
-$tab = GUICtrlCreatetab(10,22,643,680,-1,-1)
+$tab = GUICtrlCreatetab(10,22,649,677,-1,-1)
 GuiCtrlSetState(-1,2048)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetResizing(-1,102)
@@ -18,39 +18,41 @@ GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,0)&GUICtrlRead ($tab, 1))
 GUICtrlCreateGroup("Status",475,72,163,145,$BS_CENTER,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetResizing(-1,804)
-$lbStatus = GUICtrlCreateLabel("Not Monitoring",490,102,141,62,-1,-1)
+$lbStatus = GUICtrlCreateLabel("",490,102,141,62,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,804)
 $btnMonitor = GUICtrlCreateButton("Start Call Monitor",490,175,134,28,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlCreateGroup("Policy For This Call",475,297,163,386,$BS_CENTER,-1)
+GUICtrlSetResizing(-1,804)
+GUICtrlCreateGroup("Policy For This Call",475,374,163,309,$BS_CENTER,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Select a number on left then click on one of the rules. It will add a rule to the rules list.")
 GUICtrlSetResizing(-1,836)
-$inpNumber = GUICtrlCreateInput("",490,341,130,24,$ES_NUMBER,$WS_EX_CLIENTEDGE)
+$inpNumber = GUICtrlCreateInput("",490,411,130,24,$ES_NUMBER,$WS_EX_CLIENTEDGE)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetTip(-1,"The phone number to apply policy to. Or you can click on one on the left.")
 GUICtrlSetResizing(-1,836)
-$btnWhiteList = GUICtrlCreateButton("White List",509,410,100,30,-1,-1)
+$btnWhiteList = GUICtrlCreateButton("White List",510,480,100,30,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetTip(-1,"This number is my family or friend's.")
 GUICtrlSetResizing(-1,836)
-$btnWarning = GUICtrlCreateButton("Warning",509,467,100,30,-1,-1)
+$btnWarning = GUICtrlCreateButton("Warning",510,517,100,30,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Pick up the phone then play a warning message and disconnect.")
 GUICtrlSetResizing(-1,836)
-$btnDisconnect = GUICtrlCreateButton("Disconnect",509,516,100,30,-1,-1)
+$btnDisconnect = GUICtrlCreateButton("Disconnect",510,556,100,30,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Pick up the phone then disconnect it.")
 GUICtrlSetResizing(-1,836)
-$btnFakeFax = GUICtrlCreateButton("Fake Fax",507,571,100,30,-1,-1)
+$btnFakeFax = GUICtrlCreateButton("Fake Fax",510,591,100,30,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Answer this number and pretend to be a fax machine.")
 GUICtrlSetResizing(-1,836)
-$btnPhilip = GUICtrlCreateButton("It's Philip",509,624,100,30,-1,-1)
+$btnPhilip = GUICtrlCreateButton("It's Philip",510,634,100,30,-1,-1)
+GUICtrlSetState(-1,BitOr($GUI_SHOW,$GUI_DISABLE))
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
-GUICtrlSetTip(-1,"Transfer this number to a It's Lenny number. Use this only for nasty tele-marketers.")
+GUICtrlSetTip(-1,"This feature is harder to implement than I originally thought.")
 GUICtrlSetResizing(-1,836)
 GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,1)&GUICtrlRead ($tab, 1))
 $lvRuleList = GUICtrlCreatelistview("Number Pattern|Policy To Apply",35,62,397,623,BitOr($LVS_NOSORTHEADER,$LVS_SINGLESEL),BitOr($LVS_EX_FULLROWSELECT,$LVS_EX_GRIDLINES,$WS_EX_CLIENTEDGE))
@@ -95,7 +97,9 @@ $radPolicyFakeFax = GUICtrlCreateRadio("Fake Fax",477,430,119,20,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
 GUICtrlSetResizing(-1,804)
 $radPolicyPhilip = GUICtrlCreateRadio("It's Philip",477,472,119,20,-1,-1)
+GUICtrlSetState(-1,BitOr($GUI_SHOW,$GUI_DISABLE))
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetTip(-1,"This feature is harder to implement than I originally thought.")
 GUICtrlSetResizing(-1,804)
 $btnRuleAddAdv = GUICtrlCreateButton("Add Rule",492,565,100,30,-1,-1)
 GUICtrlSetFont(-1,10,400,0,"Tahoma")
@@ -114,15 +118,15 @@ GUICtrlCreateLabel("Modem Port",31,80,94,20,$SS_RIGHT,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,802)
-$lblComPort = GUICtrlCreateLabel("COM1",137,80,106,20,$SS_CENTER,-1)
+$lblComPort = GUICtrlCreateLabel("COM1",142,80,106,21,$SS_CENTER,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,802)
-GUICtrlCreateLabel("",142,80,106,23,$SS_GRAYFRAME,-1)
+GUICtrlCreateLabel("",145,75,106,30,$SS_GRAYFRAME,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,802)
-$btnSetPort = GUICtrlCreateButton("Set Port",272,73,100,30,-1,-1)
+$btnSetPort = GUICtrlCreateButton("Set Port",266,75,100,30,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetResizing(-1,802)
 $chkAutoMonitor = GUICtrlCreateCheckbox("Auto Start Monitoring",40,121,188,20,-1,-1)
@@ -164,16 +168,17 @@ GUICtrlCreateLabel("Command",23,68,82,17,$SS_RIGHT,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,802)
-$inpCommand = GUICtrlCreateInput("",119,64,273,27,-1,$WS_EX_CLIENTEDGE)
+$inpCommand = GUICtrlCreateInput("",119,64,189,27,-1,$WS_EX_CLIENTEDGE)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Send a custom command to the modem. Usually starts with 'AT'")
 GUICtrlSetResizing(-1,38)
-$btnSend = GUICtrlCreateButton("Send",408,64,100,30,-1,-1)
+$btnSend = GUICtrlCreateButton("Send",315,64,100,30,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Send a custom command to the modem. Usually starts with 'AT'")
 GUICtrlSetResizing(-1,804)
 $btnTest = GUICtrlCreateButton("Test",520,64,100,30,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetResizing(-1,804)
 $edReceived = GUICtrlCreateEdit("",23,105,610,569,BitOr($ES_AUTOHSCROLL,$ES_MULTILINE,$WS_VSCROLL),-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"0xEAEAEA")
@@ -189,9 +194,11 @@ GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,802)
 $inpCodeCidTime = GUICtrlCreateInput("TIME",388,326,77,27,-1,$WS_EX_CLIENTEDGE)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetResizing(-1,802)
 GUICtrlSetData(-1, $gsCodeCidTime)
 $inpCodeCidDate = GUICtrlCreateInput("DATE",388,295,77,27,-1,$WS_EX_CLIENTEDGE)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetResizing(-1,802)
 GUICtrlSetData(-1, $gsCodeCidDate)
 GUICtrlCreateLabel("Busy",61,369,49,25,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
@@ -199,6 +206,7 @@ GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,802)
 $inpCodeBusy = GUICtrlCreateInput("b",158,369,77,24,-1,$WS_EX_CLIENTEDGE)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetResizing(-1,802)
 GUICtrlSetData(-1, $gsCodeBusy)
 GUICtrlCreateLabel("Dial Tone",61,338,81,25,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
@@ -206,33 +214,76 @@ GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,802)
 $inpCodeDialTone = GUICtrlCreateInput("d",158,338,77,25,-1,$WS_EX_CLIENTEDGE)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetResizing(-1,802)
 GUICtrlSetData(-1, $gsCodeDialTone)
 GUICtrlCreateGroup("Caller ID Code",280,267,200,233,$BS_CENTER,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetResizing(-1,802)
 $btnSave = GUICtrlCreateButton("Save",380,516,100,30,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetResizing(-1,802)
 GUICtrlCreateLabel("CID Name",291,390,89,25,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,802)
 $inpCodeCidName = GUICtrlCreateInput("NAME",388,390,77,25,-1,$WS_EX_CLIENTEDGE)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetResizing(-1,802)
 GUICtrlSetData(-1, $gsCodeCidName)
 $chkSaveLog = GUICtrlCreateCheckbox("Save the modem log",40,150,188,20,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Save the commands and returned results to a log file.")
 GUICtrlSetResizing(-1,802)
+If $gbSaveLog Then GUICtrlSetState(-1, $GUI_CHECKED)
 GUICtrlCreateLabel("The default code below is based on a Conexiant USB modem."&@crlf&"Your modem might use different codes. Read the logs to find out.",48,194,447,67,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"-2")
-GUICtrlSetResizing(-1,802)
+GUICtrlSetResizing(-1,550)
 $inpCodeCidSep = GUICtrlCreateInput("=",389,423,77,25,-1,$WS_EX_CLIENTEDGE)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
-GUICtrlSetData(-1, $gsCodeCidName)
+GUICtrlSetResizing(-1,802)
+GUICtrlSetData(-1, $gsCodeCidSep)
 GUICtrlCreateLabel("Seperator",292,423,89,25,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,802)
+GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,3)&GUICtrlRead ($tab, 1))
+$btnClear = GUICtrlCreateButton("Clear",415,64,100,30,-1,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetResizing(-1,804)
+GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,2)&GUICtrlRead ($tab, 1))
+$comboSpeed = GUICtrlCreateCombo("",432,75,87,30,-1,-1)
+GUICtrlSetData(-1,"9600|14400|19200|38400|56000|115200")
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetTip(-1,"Speed to talk to the modem in bps. Faster is better. Universal one is 9600, but most can do 115200.")
+GUICtrlSetResizing(-1,802)
+_GUICtrlComboBox_SetEditText( $comboSpeed, String($giComSpeed))
+GUICtrlCreateLabel("Speed",377,80,53,23,-1,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetBkColor(-1,"-2")
+GUICtrlSetResizing(-1,802)
+$btnOpenLog = GUICtrlCreateButton("Open Log",266,145,100,30,-1,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetResizing(-1,802)
+GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,0)&GUICtrlRead ($tab, 1))
+$btnPhoneListClear = GUICtrlCreateButton("Clear List",509,235,100,30,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetTip(-1,"Clear the phone call list.")
+GUICtrlSetResizing(-1,804)
+$btnPhoneListExport = GUICtrlCreateButton("Export List",509,285,100,30,-1,-1)
+GUICtrlSetFont(-1,10,400,0,"Tahoma")
+GUICtrlSetTip(-1,"Export the phone call list to a CSV file.")
+GUICtrlSetResizing(-1,804)
+GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,2)&GUICtrlRead ($tab, 1))
+$btnAbout = GUICtrlCreateButton("About",45,516,100,30,-1,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetResizing(-1,802)
+GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,1)&GUICtrlRead ($tab, 1))
+$btnRuleData = GUICtrlCreateButton("Rule Data",520,520,100,30,-1,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,0)&GUICtrlRead ($tab, 1))
+$btnCallData = GUICtrlCreateButton("Call Data",509,332,100,30,-1,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
 _GUICtrlTab_SetCurFocus($tab,0)
 
 
@@ -245,8 +296,8 @@ locked=0
 resize=102
 x=10
 y=22
-width=643
-height=680
+width=649
+height=677
 func=
 font=Tahoma
 fontsize=12
@@ -268,7 +319,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=0
-[0x002002D8]
+[0x00251C80]
 order=0
 [TABPAGE4]
 page=4
@@ -293,8 +344,8 @@ handle=
 [gui]
 Handle_deklaration=default
 Handle_deklaration_const=false
-title=Main
-breite=671
+title=GuiTitle
+breite=686
 hoehe=723
 style=$WS_SIZEBOX+$WS_SYSMENU+$WS_MINIMIZEBOX
 exstyle=-1
@@ -326,7 +377,7 @@ gui_event_resized=
 gui_event_dropped=
 defaultfont=Tahoma
 defaultfontsize=12
-[0x00130332]
+[0x001A18CE]
 type=label
 handle=434
 locked=0
@@ -355,14 +406,14 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x000B1C18]
+[0x001519A0]
 type=input
 handle=435
 locked=0
 resize=38
 x=119
 y=64
-width=273
+width=189
 height=27
 func=
 font=Tahoma
@@ -384,7 +435,7 @@ tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x001F1C46]
+[0x00220CA2]
 type=label
 handle=436
 locked=0
@@ -413,12 +464,12 @@ tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x000D1BFA]
+[0x00131C0C]
 type=button
 handle=437
 locked=0
 resize=804
-x=408
+x=315
 y=64
 width=100
 height=30
@@ -442,15 +493,15 @@ tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x000D1BFE]
+[0x001D0286]
 type=label
 handle=438
 locked=0
 resize=802
-x=137
+x=142
 y=80
 width=106
-height=20
+height=21
 func=
 font=Tahoma
 fontsize=12
@@ -471,13 +522,13 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00141C2E]
+[0x00101C06]
 type=button
 handle=439
 locked=0
 resize=802
-x=272
-y=73
+x=266
+y=75
 width=100
 height=30
 func=
@@ -500,15 +551,15 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00130336]
+[0x001818EE]
 type=label
 handle=440
 locked=0
 resize=802
-x=142
-y=80
+x=145
+y=75
 width=106
-height=23
+height=30
 func=
 font=Tahoma
 fontsize=12
@@ -529,7 +580,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=29
-[0x00211C3C]
+[0x00141BA6]
 type=edit
 handle=441
 locked=0
@@ -558,7 +609,7 @@ tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x003501D0]
+[0x00141BAA]
 type=listview
 handle=442
 locked=0
@@ -587,13 +638,13 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x001602E0]
+[0x00131C0A]
 type=button
 handle=443
 locked=0
 resize=836
-x=507
-y=571
+x=510
+y=591
 width=100
 height=30
 func=
@@ -616,13 +667,13 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x001902BA]
+[0x00141B8C]
 type=button
 handle=444
 locked=0
 resize=836
-x=509
-y=410
+x=510
+y=480
 width=100
 height=30
 func=
@@ -645,13 +696,13 @@ iconindex=
 iconlarge=0
 textmode=text
 order=6
-[0x00120380]
+[0x000E1B5C]
 type=button
 handle=445
 locked=0
 resize=836
-x=509
-y=624
+x=510
+y=634
 width=100
 height=30
 func=
@@ -659,12 +710,12 @@ font=Tahoma
 fontsize=10
 fontstyle=400
 fontattribute=0
-tooltip=Transfer this number to a It's Lenny number. Use this only for nasty tele-marketers.
+tooltip=This feature is harder to implement than I originally thought.
 bgimage=
 textcolour=0x000000
 id=$btnPhilip
 text=It's Philip
-state=$GUI_SHOW+$GUI_ENABLE
+state=$GUI_SHOW+$GUI_DISABLE
 style=
 exstyle=
 bgcolour=
@@ -674,13 +725,13 @@ iconindex=
 iconlarge=0
 textmode=text
 order=10
-[0x001702D6]
+[0x00131B76]
 type=button
 handle=446
 locked=0
 resize=836
-x=509
-y=516
+x=510
+y=556
 width=100
 height=30
 func=
@@ -703,15 +754,15 @@ iconindex=
 iconlarge=0
 textmode=text
 order=8
-[0x00120348]
+[0x0022036E]
 type=group
 handle=447
 locked=0
 resize=836
 x=475
-y=297
+y=374
 width=163
-height=386
+height=309
 func=
 font=Tahoma
 fontsize=12
@@ -732,7 +783,7 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x001202A6]
+[0x00121BB6]
 type=listview
 handle=448
 locked=0
@@ -761,7 +812,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x003900AE]
+[0x00131B32]
 type=group
 handle=449
 locked=0
@@ -790,7 +841,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00120364]
+[0x00251894]
 type=radio
 handle=450
 locked=0
@@ -819,7 +870,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x0013034A]
+[0x00191BBC]
 type=radio
 handle=451
 locked=0
@@ -848,7 +899,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=14
-[0x0011034C]
+[0x00111AF6]
 type=radio
 handle=452
 locked=0
@@ -877,7 +928,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=15
-[0x00120396]
+[0x00151BBE]
 type=input
 handle=453
 locked=0
@@ -906,7 +957,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x001600B8]
+[0x0022030A]
 type=group
 handle=454
 locked=0
@@ -935,7 +986,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00140338]
+[0x00171BA0]
 type=button
 handle=455
 locked=0
@@ -964,7 +1015,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x001C0268]
+[0x00161550]
 type=button
 handle=456
 locked=0
@@ -993,7 +1044,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=26
-[0x0011034E]
+[0x001B187E]
 type=button
 handle=457
 locked=0
@@ -1022,7 +1073,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=25
-[0x001618EA]
+[0x00151B8A]
 type=radio
 handle=458
 locked=0
@@ -1051,7 +1102,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x001E1C48]
+[0x001F0398]
 type=radio
 handle=459
 locked=0
@@ -1080,7 +1131,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=21
-[0x006901BE]
+[0x00171BBA]
 type=radio
 handle=460
 locked=0
@@ -1109,7 +1160,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=22
-[0x00150334]
+[0x001A187C]
 type=radio
 handle=461
 locked=0
@@ -1123,12 +1174,12 @@ font=Tahoma
 fontsize=10
 fontstyle=400
 fontattribute=0
-tooltip=
+tooltip=This feature is harder to implement than I originally thought.
 bgimage=
 textcolour=0x000000
 id=$radPolicyPhilip
 text=It's Philip
-state=$GUI_SHOW+$GUI_ENABLE
+state=$GUI_SHOW+$GUI_DISABLE
 style=
 exstyle=
 bgcolour=
@@ -1138,7 +1189,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=23
-[0x002201E0]
+[0x00641AA4]
 type=group
 handle=462
 locked=0
@@ -1167,7 +1218,7 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00131C56]
+[0x005C1740]
 type=label
 handle=463
 locked=0
@@ -1185,7 +1236,7 @@ tooltip=
 bgimage=
 textcolour=0x000000
 id=$lbStatus
-text=Not Monitoring
+text=
 state=$GUI_SHOW+$GUI_ENABLE
 style=
 exstyle=
@@ -1196,11 +1247,11 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00191C28]
+[0x002918F8]
 type=button
 handle=464
 locked=0
-resize=
+resize=804
 x=490
 y=175
 width=134
@@ -1225,7 +1276,7 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x002102FC]
+[0x00321FA2]
 type=checkbox
 handle=465
 locked=0
@@ -1254,7 +1305,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00141C6A]
+[0x00181CBC]
 type=input
 handle=466
 locked=0
@@ -1283,7 +1334,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x001D1C62]
+[0x00171704]
 type=label
 handle=467
 locked=0
@@ -1312,7 +1363,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00251CD6]
+[0x001819E6]
 type=group
 handle=468
 locked=0
@@ -1341,7 +1392,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x0015029A]
+[0x00290CCE]
 type=input
 handle=469
 locked=0
@@ -1370,7 +1421,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=36
-[0x00221C44]
+[0x00291C3A]
 type=label
 handle=470
 locked=0
@@ -1399,11 +1450,11 @@ iconindex=
 iconlarge=0
 textmode=text
 order=35
-[0x00131D26]
+[0x00111C0E]
 type=button
 handle=471
 locked=0
-resize=
+resize=804
 x=520
 y=64
 width=100
@@ -1428,7 +1479,7 @@ tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x00121D24]
+[0x001B184E]
 type=input
 handle=472
 locked=0
@@ -1457,7 +1508,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=38
-[0x002602F6]
+[0x001A032C]
 type=label
 handle=473
 locked=0
@@ -1486,13 +1537,13 @@ iconindex=
 iconlarge=0
 textmode=text
 order=37
-[0x001F024C]
+[0x0017143A]
 type=button
 handle=474
 locked=0
 resize=836
-x=509
-y=467
+x=510
+y=517
 width=100
 height=30
 func=
@@ -1515,7 +1566,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=7
-[0x002102F4]
+[0x001913BC]
 type=radio
 handle=475
 locked=0
@@ -1544,7 +1595,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=20
-[0x000F1D96]
+[0x001719E2]
 type=radio
 handle=476
 locked=0
@@ -1573,13 +1624,13 @@ iconindex=
 iconlarge=0
 textmode=text
 order=19
-[0x000E1ECE]
+[0x001614E0]
 type=input
 handle=477
 locked=0
 resize=836
 x=490
-y=341
+y=411
 width=130
 height=24
 func=
@@ -1602,7 +1653,7 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x000E1ECC]
+[0x001B12B0]
 type=label
 handle=478
 locked=0
@@ -1631,7 +1682,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=46
-[0x000F1B88]
+[0x00251C5A]
 type=label
 handle=479
 locked=0
@@ -1660,11 +1711,11 @@ iconindex=
 iconlarge=0
 textmode=text
 order=47
-[0x00101ED4]
+[0x001714BE]
 type=input
 handle=480
 locked=0
-resize=
+resize=802
 x=388
 y=326
 width=77
@@ -1689,11 +1740,11 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x000F1ED2]
+[0x00161D32]
 type=input
 handle=481
 locked=0
-resize=
+resize=802
 x=388
 y=295
 width=77
@@ -1718,7 +1769,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00151D40]
+[0x00181590]
 type=label
 handle=482
 locked=0
@@ -1747,11 +1798,11 @@ iconindex=
 iconlarge=0
 textmode=text
 order=50
-[0x000C1E7E]
+[0x00171514]
 type=input
 handle=483
 locked=0
-resize=
+resize=802
 x=158
 y=369
 width=77
@@ -1776,7 +1827,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00561E88]
+[0x00190B18]
 type=label
 handle=484
 locked=0
@@ -1805,11 +1856,11 @@ iconindex=
 iconlarge=0
 textmode=text
 order=52
-[0x00571E8A]
+[0x00191448]
 type=input
 handle=485
 locked=0
-resize=
+resize=802
 x=158
 y=338
 width=77
@@ -1834,11 +1885,11 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00561E8C]
+[0x001C19F6]
 type=group
 handle=486
 locked=0
-resize=
+resize=802
 x=280
 y=267
 width=200
@@ -1863,11 +1914,11 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00551E8E]
+[0x00171542]
 type=button
 handle=487
 locked=0
-resize=
+resize=802
 x=380
 y=516
 width=100
@@ -1892,7 +1943,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00571E76]
+[0x00181B02]
 type=label
 handle=488
 locked=0
@@ -1921,11 +1972,11 @@ iconindex=
 iconlarge=0
 textmode=text
 order=56
-[0x00B31AA6]
+[0x00171B50]
 type=input
 handle=489
 locked=0
-resize=
+resize=802
 x=388
 y=390
 width=77
@@ -1950,9 +2001,9 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00411F10]
+[0x00171B48]
 type=checkbox
-handle=498
+handle=490
 locked=0
 resize=802
 x=40
@@ -1973,17 +2024,17 @@ state=$GUI_SHOW+$GUI_ENABLE
 style=
 exstyle=
 bgcolour=
-code=
+code=If $gbSaveLog Then GUICtrlSetState(-1, $GUI_CHECKED)
 tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
 order=58
-[0x006219C0]
+[0x00131B24]
 type=label
-handle=499
+handle=491
 locked=0
-resize=802
+resize=550
 x=48
 y=194
 width=447
@@ -2008,11 +2059,11 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00151E24]
+[0x00111B14]
 type=input
-handle=500
+handle=492
 locked=0
-resize=
+resize=802
 x=389
 y=423
 width=77
@@ -2031,15 +2082,15 @@ state=$GUI_SHOW+$GUI_ENABLE
 style=
 exstyle=$WS_EX_CLIENTEDGE
 bgcolour=
-code=GUICtrlSetData(-1, $gsCodeCidName)
+code=GUICtrlSetData(-1, $gsCodeCidSep)
 tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
 order=60
-[0x00AE1A8A]
+[0x001F1B3C]
 type=label
-handle=501
+handle=493
 locked=0
 resize=802
 x=292
@@ -2066,4 +2117,265 @@ iconindex=
 iconlarge=0
 textmode=text
 order=61
+[0x00141B54]
+type=button
+handle=494
+locked=0
+resize=804
+x=415
+y=64
+width=100
+height=30
+func=
+font=Tahoma
+fontsize=12
+fontstyle=400
+fontattribute=0
+tooltip=
+bgimage=
+textcolour=0x000000
+id=$btnClear
+text=Clear
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=
+code=
+tabpage=3
+iconindex=
+iconlarge=0
+textmode=text
+order=62
+[0x00431D38]
+type=combo
+handle=503
+locked=0
+resize=802
+x=432
+y=75
+width=87
+height=30
+func=
+font=Tahoma
+fontsize=12
+fontstyle=400
+fontattribute=0
+tooltip=Speed to talk to the modem in bps. Faster is better. Universal one is 9600, but most can do 115200.
+bgimage=
+textcolour=0x000000
+id=$comboSpeed
+text=9600|14400|19200|38400|56000|115200
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=
+code=_GUICtrlComboBox_SetEditText( $comboSpeed, String($giComSpeed))
+order=63
+tabpage=2
+iconindex=
+iconlarge=0
+textmode=text
+[0x00290316]
+type=label
+handle=504
+locked=0
+resize=802
+x=377
+y=80
+width=53
+height=23
+func=
+font=Tahoma
+fontsize=12
+fontstyle=400
+fontattribute=0
+tooltip=
+bgimage=
+textcolour=0x000000
+id=
+text=Speed
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=-2
+code=
+order=64
+tabpage=2
+iconindex=
+iconlarge=0
+textmode=text
+[0x010B19EE]
+type=button
+handle=505
+locked=0
+resize=802
+x=266
+y=145
+width=100
+height=30
+func=
+font=Tahoma
+fontsize=12
+fontstyle=400
+fontattribute=0
+tooltip=
+bgimage=
+textcolour=0x000000
+id=$btnOpenLog
+text=Open Log
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=
+code=
+order=65
+tabpage=2
+iconindex=
+iconlarge=0
+textmode=text
+[0x00201C1A]
+type=button
+handle=506
+locked=0
+resize=804
+x=509
+y=235
+width=100
+height=30
+func=
+font=Tahoma
+fontsize=10
+fontstyle=400
+fontattribute=0
+tooltip=Clear the phone call list.
+bgimage=
+textcolour=0x000000
+id=$btnPhoneListClear
+text=Clear List
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=
+code=
+order=66
+tabpage=0
+iconindex=
+iconlarge=0
+textmode=text
+[0x003F12FA]
+type=button
+handle=507
+locked=0
+resize=804
+x=509
+y=285
+width=100
+height=30
+func=
+font=Tahoma
+fontsize=10
+fontstyle=400
+fontattribute=0
+tooltip=Export the phone call list to a CSV file.
+bgimage=
+textcolour=0x000000
+id=$btnPhoneListExport
+text=Export List
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=
+code=
+tabpage=0
+iconindex=
+iconlarge=0
+textmode=text
+order=67
+[0x006300B8]
+type=button
+handle=508
+locked=0
+resize=802
+x=45
+y=516
+width=100
+height=30
+func=
+font=Tahoma
+fontsize=12
+fontstyle=400
+fontattribute=0
+tooltip=
+bgimage=
+textcolour=0x000000
+id=$btnAbout
+text=About
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=
+code=
+order=68
+tabpage=2
+iconindex=
+iconlarge=0
+textmode=text
+[0x006A11F0]
+type=button
+handle=509
+locked=0
+resize=
+x=520
+y=520
+width=100
+height=30
+func=
+font=Tahoma
+fontsize=12
+fontstyle=400
+fontattribute=0
+tooltip=
+bgimage=
+textcolour=0x000000
+id=$btnRuleData
+text=Rule Data
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=
+code=
+order=69
+tabpage=1
+iconindex=
+iconlarge=0
+textmode=text
+[0x01170388]
+type=button
+handle=510
+locked=0
+resize=
+x=509
+y=332
+width=100
+height=30
+func=
+font=Tahoma
+fontsize=12
+fontstyle=400
+fontattribute=0
+tooltip=
+bgimage=
+textcolour=0x000000
+id=$btnCallData
+text=Call Data
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=
+code=
+order=70
+tabpage=0
+iconindex=
+iconlarge=0
+textmode=text
 #ce

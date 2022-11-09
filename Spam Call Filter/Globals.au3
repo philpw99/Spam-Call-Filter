@@ -1,14 +1,17 @@
 ;Globals.au3
 ; All registry settings stored here.
+
+Global $gsVersion = "1.0"
 Global $gsRegBase = "HKEY_CURRENT_USER\Software\SpamCallFilter"
 Global $oModem = ObjCreate("Scripting.Dictionary")
-; Set auto monitor.
+; Set auto monitor. The monitoring setting will be determined in the main file.
 Global $gbCallMonitor = False
-If RegRead($gsRegBase, "AutoMonitor") = 1 Then $gbCallMonitor = True
 
 ; Set Save log
 Global $gbSaveLog = False 
-If RegRead($gsRegBase, "SaveLog") = 1 Then $gbSaveLog = True
+If RegRead($gsRegBase, "SaveLog") = 1 Then
+	$gbSaveLog = True
+EndIf
 
 Global $gbLineProcessed = False, $gbRinging = False, $gbOnHook = True
 
@@ -16,6 +19,12 @@ Global $gbLineProcessed = False, $gbRinging = False, $gbOnHook = True
 Global $gsAppDir = @AppDataDir & "\SpamCallFilter"
 If Not FileExists($gsAppDir) Then 
 	DirCreate($gsAppDir)
+EndIf
+
+Global $giComSpeed = RegRead($gsRegBase, "ComSpeed")
+If @error Then 
+	$giComSpeed = 9600	; Universal speed
+	RegWrite($gsRegBase, "ComSpeed", "REG_DWORD", $giComSpeed)
 EndIf
 
 ; Initial Modem codes
@@ -29,6 +38,10 @@ Global $giCurrentRuleIndice, $giCurrentPhoneCallIndice
 Global $gaCalls[0][5]
 Enum $CALL_DATE, $CALL_TIME, $CALL_NUMBER, $CALL_NAME, $CALL_POLICYAPPLIED
 Global $gaCurrentCall[5]
+
+Func GuiTitle()
+	Return "Spam Call Filter v" & $gsVersion
+EndFunc
 
 Func InitCodes()
 	; It will read the registry and set the global codes

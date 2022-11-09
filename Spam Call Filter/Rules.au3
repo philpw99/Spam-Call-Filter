@@ -97,7 +97,7 @@ Func RuleAdd($sRule)
 	_ArrayAdd($gaRules, $sNumber& "|" & $sRule)	; Add new rule to the end
 	; Add new rule to the end of the rule list
 	Local $iItem = _GUICtrlListView_AddItem($lvRuleList, $sNumber)
-	_GUICtrlListView_SetItemText($lvRuleList, $sRule, $iItem, 1)
+	_GUICtrlListView_SetItemText($lvRuleList, $iItem, $sRule, 1)
 	SaveRuleList()
 	
 	MsgBox(262208,"Rule Saved","The new rule is successfully saved.",0, $guiMain)
@@ -120,7 +120,7 @@ Func RuleAddWhiteList()
 	_ArrayInsert($gaRules, 1, $sNumber & "|White List")		; Insert new values above the first row
 	; Insert row in the rules list view as well.
 	_GUICtrlListView_InsertItem($lvRuleList, $sNumber, 0 )
-	_GUICtrlListView_SetItemText($lvRuleList, "White List", 0, 1)
+	_GUICtrlListView_SetItemText($lvRuleList, 0, "White List", 1)
 	SaveRuleList()
 	MsgBox(262208,"Rule Saved","The new rule is successfully saved.",0, $guiMain)
 EndFunc
@@ -141,12 +141,13 @@ Func RuleAddPhilip()
 	RuleAdd("It's Philip")
 EndFunc
 
-Func RuleAddAdv()
+Func GetCurrentRule()
+	; Return as string "pattern|policy"
 	; This is the rule add button in the second tab
-	$sNumber = guictrlread($inpPattern)
+	Local $sNumber = guictrlread($inpPattern)
 	If $sNumber = "" Then 
 		MsgBox(262192,"Pattern number cannot be empty","The pattern number cannot be empty.",0, $guiMain)
-		Return 
+		Return SetError(1)
 	EndIf
 	; Select pattern
 	Select 
@@ -159,7 +160,7 @@ Func RuleAddAdv()
 		Case Else
 			; Not select one at all.
 			MsgBox(262192,"Choose one way for the pattern.","You have to choose either 'start with', 'end with' or 'exactly'",0, $guiMain)
-			Return 
+			Return SetError(1)
 	EndSelect
 	; Select policy
 	Local $sPolicy = ""
@@ -167,7 +168,7 @@ Func RuleAddAdv()
 		Case Check($radPolicyWhiteList)
 			$sPolicy = "White List"
 		Case Check($radPolicyNone)
-			$sPolicy = "None"
+			$sPolicy = ""
 		Case Check($radPolicyWarning)
 			$sPolicy = "Warning"
 		Case Check($radPolicyDisconnect)
@@ -179,21 +180,31 @@ Func RuleAddAdv()
 		Case Else
 			; Not select the policy yet
 			MsgBox(262192,"Choose one policy","You have to choose one of the policy.",0, $guiMain)
-			Return 
+			Return SetError(1)
 	EndSelect
+	Return $sNumber & "|" & $sPolicy
+EndFunc 
+	
+Func RuleAddAdv()
+	Local $sRule = GetCurrentRule()
+	If @error Then Return 
+	
+	$sNumber = GetValueBySep($sRule, "|")
+	$sPolicy = GetValueBySep($sRule, "|", 2)
 	
 	If $sPolicy = "White List" Then
 		; Add it to the top
 		_ArrayInsert($gaRules, 1, $sNumber & "|" & $sPolicy)		; Insert new values above the first row
 		; Insert row in the rules list view as well.
 		_GUICtrlListView_InsertItem($lvRuleList, $sNumber, 0 )
-		_GUICtrlListView_SetItemText($lvRuleList, $sPolicy, 0, 1)
+		_GUICtrlListView_SetItemText($lvRuleList, 0, $sPolicy, 1)
 	Else
 		; Add it to the end.
 		_ArrayAdd($gaRules, $sNumber& "|" & $sPolicy)	; Add new rule to the end
 		; Add new rule to the end of the rule list
 		Local $iItem = _GUICtrlListView_AddItem($lvRuleList, $sNumber)
-		_GUICtrlListView_SetItemText($lvRuleList, $sPolicy, $iItem, 1)
+		; _GUICtrlListView_AddSubItem($lvRuleList, $iItem, $sPolicy, 1)
+		_GUICtrlListView_SetItemText($lvRuleList, $iItem, $sPolicy, 1)
 	EndIf 
 	SaveRuleList()
 EndFunc
@@ -201,13 +212,34 @@ EndFunc
 Func RuleChange()
 	; This is for second tab rule change button
 	Local $iRow = _GUICtrlListView_GetSelectedIndices($lvRuleList)
-	MsgBox(0, "row", "Row selected:" & $iRow)
+	; c("Row selected to bechanged:" & $iRow)
+	If $iRow = "" Then 
+		MsgBox(262192,"Choose a Rule","You need to choose a rule from the list on the left first.",0, $guiMain)
+		Return 
+	EndIf
+	Local $sRule = GetCurrentRule()
+	If @error Then Return 
+	
+	$sPattern = GetValueBySep($sRule, "|")
+	$sPolicy = GetValueBySep($sRule, "|", 2)
+	$gaRules[$iRow][$RULE_PATTERN] = $sPattern
+	$gaRules[$iRow][$RULE_POLICY] = $sPolicy
+	_GUICtrlListView_SetItemText($lvRuleList, $iRow, $sPattern)
+	_GUICtrlListView_SetItemText($lvRuleList, $iRow, $sPolicy, 1)
+	SaveRuleList()
 EndFunc
 
 Func RuleDelete()
 	; This is for second tab rule delete button
 	Local $iRow = _GUICtrlListView_GetSelectedIndices($lvRuleList)
-	MsgBox(0, "row", "Row selected:" & $iRow)
+	; MsgBox(0, "row", "Row selected:" & $iRow)
+	If $iRow = "" Then 
+		MsgBox(262192,"Choose a Rule","You need to choose a rule from the list on the left first.",0, $guiMain)
+		Return 
+	EndIf
+	_ArrayDelete($gaRules, $iRow)
+	_GUICtrlListView_DeleteItem($lvRuleList, $iRow)
+	SaveRuleList()
 EndFunc
 
 Func Check($hControl)
@@ -252,7 +284,8 @@ Func RuleDisconnect( )
 	$iTimeLimit = 20000		; 20 Seconds
 	; This one will pickup, wait for time limit, then just disconnect
 	AddLine("Doing Disconnect...")
-	AddLine( "Modem Pickup:" & SendCommand("AT+VLS=5") )	; Modem pick up, Internal speaker connected to the line.
+	AddLine( "Modem Pickup:" & SendCommand("AT+VLS=1") )	; Modem pick up.
+	; Just silence
 	WaitReceiveLines($iTimeLimit)
 	HangUp()
 EndFunc
@@ -261,27 +294,55 @@ Func RuleIsPhilip()
 	; Play voice.
 	$iTimeLimit = 30000		; 30 seconds
 	AddLine("Doing It's Philip ...")
-	AddLine( "Modem Pickup: " & SendCommand("AT+VLS=5") )	; Modem pick up, Internal speaker connected to the line.
+	AddLine( "Modem Pickup: " & SendCommand("AT+VLS=1") )	; Modem pick up.
 	
 	PlayWav( @ScriptDir & "\out.wav")
+	AddLine("Back to the rule.")
 	WaitReceiveLines(5000) ; Wait 5 seconds for other side to start talking.
 	; WaitForSilence()	; Now let the other side talk.  It's bad. Wait too long.
 	
 	HangUp()
 EndFunc
 
-Func WaitForSilence($iTimeOut = 30000)
+Func WaitForSilence()
+	$iTimeOut = 10000
+	; Enter pick up mode
+	AddLine("Enter modem pickup mode:" & SendCommand("AT+VLS=1") )
+	AddLine("Set compression:" & SendCommand("AT+VSM=1") )
 	; Enter voice recording mode
-	AddLine("Switch to Voice Recording mode:" & SendCommand("AT+VRX") )
-	AddLine("Wait for silence.")
-	; Read input for underbuffer
+	; AddLine("Switch to Voice Recording mode:" & SendCommand("AT+VRX") )
+	; AddLine("Wait for silence.")
+	_CommSendString("AT+VRX" & @CR)
+
+	Local $aData[8000]	; Voice data in 1 second.
+	$iThreshold = 50 * 8000	; average data is below 50
+	Local $i = 0, $iTotal = 0, $iCount = 0
 	Local $hTimer = TimerInit()
 	While TimerDiff($hTimer) < $iTimeOut
-		$instr = _Commgetstring()
-		If $instr <> "" Then
-			$str = StringLeft($instr, 2)
-			If $str = $gsCodeBusy Then return
+		$byte = _CommReadChar()
+		If $byte <> -1 Then
+			$byte = Asc($byte)	; Convert it to int.
+			$iCount += 1	; Total bytes read
+			If $iCount > 8000 Then 
+				$i = Mod($iCount, 8000)
+			EndIf 
+
+			$iTotal = $iTotal - $aData[$i] + $byte
+			$aData[$i] = $byte
+				
+			
+			If Asc($byte)=16 Then
+				$byte = _CommReadByte()
+				$i += 1
+				If Asc($byte) = 3 Then
+					ExitLoop 
+				EndIf
+			EndIf
 		EndIf
-		Sleep(20)
-	Wend	
+	Wend
+	c("total byte:" & $i)
+	_CommSendByte(16)
+	_CommSendByte(33) ; receive abort.
+	AddLine("modem on hook:" & SendCommand("AT+VLS=0") )
+	HangUp()
 EndFunc

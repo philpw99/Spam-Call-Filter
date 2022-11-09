@@ -684,7 +684,7 @@ Func _CommSendByte($byte, $iWaitComplete = 0)
 
     $vDllAns = DllCall($hDll, 'int', 'SendByte', 'int', $byte, 'int', $iWaitComplete)
     If @error <> 0 Then
-        SetError(1)
+        SetError(2)
         Return -1
     Else
         Return $vDllAns[0]

@@ -1,4 +1,4 @@
-Func SaveSettings()
+Func EventSaveSettings()
 	; Save all settings in "Settings" tab
 	; Com port is saved immediately.
 	; RegWrite($gsRegBase, "ComPort", "REG_SZ", GUICtrlRead($lblComPort))
@@ -35,4 +35,15 @@ Func SetAutoMonitor()
 	Else
 		RegWrite($gsRegBase, "AutoMonitor", "REG_DWORD", 0)
 	EndIf
+EndFunc
+
+Func EventAbout()
+	MsgBox(262208,"About this program","Github:  https://github.com/philpw99/Spam-Call-Filter" _ 
+		& @CRLF & "This program is my middle finger to all the telemarketers out there, " _ 
+		& @CRLF & "who make millions of phone calls and waste so much of people's time." _ 
+		& @CRLF & "And billions of dollars were cheated out of innocent people every year." _ 
+		& @CRLF & "What did government do to stop this plague? You tell me." _ 
+		& @CRLF & "Finally it's time for me to do something about it." _ 
+		& @CRLF & "I am not a good programmer, but I have some tricks under my sleeves." _
+		& @CRLF & "This program should remain free for everyone's sake."		,0, $guiMain)
 EndFunc

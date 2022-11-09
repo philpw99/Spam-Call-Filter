@@ -94,16 +94,17 @@ Func GetModemInfo()
 	If $sPort = "" Then
 		$oModem.RemoveAll()
 		Return SetError(1)
+	Else 
+		; Set the COM port text
+		GUICtrlSetData($lblComPort, $sPort )
 	EndIf
 	
 	AddLine("Port: " & $sPort & " is connected.")
 	Local $sResult = ""
-	SendCommand("ATE0")		; No echo
+
 	With $oModem
 		.Item("Port") = $sPort
-		$sResult = SendCommand("AT+FMI?")
-		c("Manu:" & $sResult)
-		.Item("Manufacturer") = GetLine( $sResult, 1 )
+		.Item("Manufacturer") = GetLine( SendCommand("AT+FMI?"), 1 )
 		.Item("ProductID") = GetLine( SendCommand("AT+FMM?"), 1 )
 		.Item("Version") = GetLine( SendCommand("AT+FMR?"), 1 )
 		Local $sVoiceClass = GetLine( SendCommand("AT+FCLASS=?"), 1)
@@ -115,8 +116,6 @@ Func GetModemInfo()
 		AddLine("Modem Version: " & .Item("Version") )
 		AddLine("Voice Mode: " & .Item("VoiceMode") )
 	EndWith 
-	
-	
 	
 EndFunc
 
@@ -162,7 +161,8 @@ Func SetPort($sPort)
 		$iPort = Int($sPort)
 	EndIf
 	Local $sErr = ""
-	Local $iErr = _CommSetport($iPort, $sErr) ; The rest is all default: $iBaud=9600,$iBits=8,$ipar=0,$iStop=1,$iFlow=0,$RTSMode = 0,$DTRMode = 0
+	Local $iErr = _CommSetport($iPort, $sErr, $giComSpeed) 
+	; The rest is all default: $iBaud=9600,$iBits=8,$ipar=0,$iStop=1,$iFlow=0,$RTSMode = 0,$DTRMode = 0
 	If $iErr = 1 Then Return "OK"
 	Return SetError($iErr, 0, $sErr)
 EndFunc
@@ -171,28 +171,15 @@ Func InitModem()
 	; Initialize modem settings.
 	SendCommand("ATZ")	; Soft reset the modem to default profile
 	SendCommand("ATE0")	; Disable command echo
-	
-	Local $sResult = SendCommand("AT+FCLASS=8")	; Enter voice mode
-	If Not EndWithOK($sResult) Then 
-		Return SetError(1)
-	EndIf
-	AddLine ("Modem now initialized and in voice mode.")
-	AddLine("Set DTMF duration to 0.2" & @CRLF & SendCommand("AT+VTD=20") )	; Set DTMF dial tone duration. Reg is 85, too long.
-
+	SendCommand("ATX7")	; Set get basic result codes with dial tone AND busy detection
+	; Set Xon Xoff values
+	; _CommSetXonXoffProperties(11, 13, 100, 100)
 	; SendCommand("ATV1")	; Set verbose response
-	; SendCommand("ATX3")	; Set get basic result codes with dial tone detection
-
-	
-	$sResult = SendCommand("AT&V") ; Get all the parameters
-	; Get the codes.
-	With $oModem
-		.Item("Escape") = Int( GetPara($sResult, "S02:") )
-		.Item("CR") = Int( GetPara($sResult, "S03:") )
-		.Item("LF") = Int( GetPara($sResult, "S04:") )
-	EndWith
 	SendCommand("ATS0=0")	; Disable auto answering (just in case)
 	SendCommand("AT+VCID=1")	; Enable caller ID
-	
+	AddLine( "Entering Voice Mode:" & SendCommand("AT+FCLASS=8") )	; Enter voice mode
+	SendCommand("AT+VTD=20")	; Set DTMF dial tone duration. Reg is 85, too long.
+	SetStatus("Modem is ready.")
 EndFunc
 
 Func GetPara($sResult, $sPara)
