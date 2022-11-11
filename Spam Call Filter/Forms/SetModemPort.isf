@@ -13,9 +13,9 @@ GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetBkColor(-1,"-2")
 $edPortStatus = GUICtrlCreateEdit("Please select one port above.",127,149,317,127,$ES_READONLY,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
-$btnOK = GUICtrlCreateButton("OK",93,292,100,30,-1,-1)
+$btnPortOK = GUICtrlCreateButton("OK",93,292,100,30,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
-$btnCancel = GUICtrlCreateButton("Cancel",282,292,100,30,-1,-1)
+$btnPortCancel = GUICtrlCreateButton("Cancel",282,292,100,30,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 
 
@@ -57,7 +57,7 @@ gui_event_resized=
 gui_event_dropped=
 defaultfont=MS Sans Serif
 defaultfontsize=8
-[0x00111FBA]
+[0x00081B1A]
 type=label
 handle=433
 locked=0
@@ -86,7 +86,7 @@ tabpage=-1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00081F7C]
+[0x00011B1C]
 type=combo
 handle=434
 locked=0
@@ -115,7 +115,7 @@ tabpage=-1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00071F64]
+[0x00011B22]
 type=label
 handle=435
 locked=0
@@ -144,7 +144,7 @@ tabpage=-1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00091FBC]
+[0x00011B24]
 type=label
 handle=436
 locked=0
@@ -173,7 +173,7 @@ tabpage=-1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00091FBE]
+[0x00011B26]
 type=edit
 handle=437
 locked=0
@@ -202,7 +202,7 @@ tabpage=-1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00091FC0]
+[0x00011B28]
 type=button
 handle=438
 locked=0
@@ -219,7 +219,7 @@ fontattribute=0
 tooltip=
 bgimage=
 textcolour=0x000000
-id=$btnOK
+id=$btnPortOK
 text=OK
 state=$GUI_SHOW+$GUI_ENABLE
 style=
@@ -231,7 +231,7 @@ tabpage=-1
 iconindex=
 iconlarge=0
 textmode=text
-[0x000A1FC2]
+[0x00011B2A]
 type=button
 handle=439
 locked=0
@@ -248,7 +248,7 @@ fontattribute=0
 tooltip=
 bgimage=
 textcolour=0x000000
-id=$btnCancel
+id=$btnPortCancel
 text=Cancel
 state=$GUI_SHOW+$GUI_ENABLE
 style=

@@ -1,8 +1,10 @@
-#Region ;**** Directives 
+#NoTrayIcon
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Outfile_type=a3x
 #AutoIt3Wrapper_Icon=modem.ico
+#AutoIt3Wrapper_Outfile=release\Spam_Call_Filter.a3x
 #AutoIt3Wrapper_UseX64=n
-#NoTrayIcon		; No autoit icon show in the tray.
-#EndRegion ;**** Directives
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
 #include <windowsconstants.au3>
 #include <buttonconstants.au3>

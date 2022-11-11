@@ -117,6 +117,8 @@ Func SetModemPort($sPortName)
 		Return True
 	EndIf
 	
+	Opt("GUIOnEventMode", 0)	; Disable the onevent mode for now
+	
 	; Get the list of ports like "COM1|COM2"
 	Local $sPortList = _CommListPorts(1)
 	If @error = 1 Or $sPortList = "" Then 
@@ -135,11 +137,12 @@ Func SetModemPort($sPortName)
 	; Set the port list
 	GUICtrlSetData($comboPort, $sPortList, "")
 	
+	Local $bReturn = False	; return value
 	GUISetState(@SW_SHOW, $guiSetModemPort)
 	While True
 		Local $nMsg = GUIGetMsg()
 		Switch $nMsg
-			Case $btnOK
+			Case $btnPortOK
 				With $oModem
 					If .Count = 0 Then 
 						MsgBox(262160,"No Valid Modem Yet","Seems you haven't choose a valid serial port for the modem yet.",0, $guiSetModemPort)
@@ -153,7 +156,8 @@ Func SetModemPort($sPortName)
 					RegWrite($gsRegBase, "ComPort", "REG_SZ", .Item("Port") )
 				EndWith
 				GUIDelete($guiSetModemPort)
-				Return True
+				$bReturn = True
+				ExitLoop 
 			Case $comboPort
 				Local $sPort = GUICtrlRead($comboPort)
 				$sResult = SetPort($sPort)
@@ -184,13 +188,17 @@ Func SetModemPort($sPortName)
 				EndWith
 				
 				; Replied with AT. Now find out the model, id... etc
-			Case $btnCancel, $GUI_EVENT_CLOSE
+			Case $btnPortCancel, $GUI_EVENT_CLOSE
 				GUIDelete($guiSetModemPort)
-				Return False 
+				$bReturn = False
+				ExitLoop
 		EndSwitch
 		Sleep(20)
 	Wend
 	
+	Events()	; Turn on the onevent mode again.)
+	
+	Return $bReturn
 EndFunc
 
 Func GetModemInfo()
