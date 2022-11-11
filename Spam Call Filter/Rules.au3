@@ -63,8 +63,6 @@ Func SetCurrentRule($iRow)
 				GUICtrlSetState($radPolicyWarning, $GUI_CHECKED )
 			Case "Fake Fax"
 				GUICtrlSetState($radPolicyFakeFax, $GUI_CHECKED )
-			Case "It's Philip"
-				GUICtrlSetState($radPolicyPhilip, $GUI_CHECKED )
 			Case Else 
 				GUICtrlSetState($radPolicyNone, $GUI_CHECKED )
 		EndSwitch
@@ -175,8 +173,6 @@ Func GetCurrentRule()
 			$sPolicy = "Disconnect"
 		Case Check($radPolicyFakeFax)
 			$sPolicy = "Fake Fax"
-		Case Check($radPolicyPhilip)
-			$sPolicy = "It's Philip"
 		Case Else
 			; Not select the policy yet
 			MsgBox(262192,"Choose one policy","You have to choose one of the policy.",0, $guiMain)
@@ -272,7 +268,7 @@ Func RuleFakeFax( )
 	$iTimeLimit = 30000		; 30 seconds
 	; This one will pickup the phone and pretend to be a fax machine.
 	; Assume it's already in voice mode
-	AddLine("Doing Fake Fax...")
+	AddLine("Doing Policy Fake Fax...")
 	SendCommand("AT+FCLASS=1") 	; Get in fax mode
 	AddLine( "Modem Answer:" & SendCommand("ATA"))			; Answer
 	WaitReceiveLines($iTimeLimit)	; Wait 30 seconds to receive any thing.
@@ -283,24 +279,21 @@ EndFunc
 Func RuleDisconnect( )
 	$iTimeLimit = 20000		; 20 Seconds
 	; This one will pickup, wait for time limit, then just disconnect
-	AddLine("Doing Disconnect...")
+	AddLine("Doing Policy Disconnect...")
 	AddLine( "Modem Pickup:" & SendCommand("AT+VLS=1") )	; Modem pick up.
 	; Just silence
 	WaitReceiveLines($iTimeLimit)
 	HangUp()
 EndFunc
 
-Func RuleIsPhilip()
+Func RuleWarning()
 	; Play voice.
-	$iTimeLimit = 30000		; 30 seconds
-	AddLine("Doing It's Philip ...")
+	AddLine("Doing Policy Warning ...")
 	AddLine( "Modem Pickup: " & SendCommand("AT+VLS=1") )	; Modem pick up.
-	
-	PlayWav( @ScriptDir & "\out.wav")
+	InitReceiveFlags()
+	PlayWav8bitUnsigned( @ScriptDir & "\Warning.wav")
 	AddLine("Back to the rule.")
 	WaitReceiveLines(5000) ; Wait 5 seconds for other side to start talking.
-	; WaitForSilence()	; Now let the other side talk.  It's bad. Wait too long.
-	
 	HangUp()
 EndFunc
 

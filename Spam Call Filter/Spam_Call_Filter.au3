@@ -1,7 +1,8 @@
-#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#Region ;**** Directives 
 #AutoIt3Wrapper_Icon=modem.ico
 #AutoIt3Wrapper_UseX64=n
-#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+#NoTrayIcon		; No autoit icon show in the tray.
+#EndRegion ;**** Directives
 
 #include <windowsconstants.au3>
 #include <buttonconstants.au3>
@@ -28,6 +29,7 @@ If Not Disclaimer() Then Exit	; Not Accpeting the terms.
 
 ; Create main gui
 Global $guiMain = GUICreate( GuiTitle(),671,723,-1,-1,BitOr($WS_SIZEBOX,$WS_SYSMENU,$WS_MINIMIZEBOX),-1)
+; GUISetIcon(@ScriptDir & "\modem.ico")
 #include "Forms\Main.isf"
 
 
@@ -148,18 +150,15 @@ Func Events()
 	GUICtrlSetOnEvent($btnWarning, "RuleAddWarning")
 	GUICtrlSetOnEvent($btnDisconnect, "RuleAddDisconnect")
 	GUICtrlSetOnEvent($btnFakeFax, "RuleAddFakeFax")
-	GUICtrlSetOnEvent($btnPhilip, "RuleIsPhilip")
 	GUICtrlSetOnEvent($btnPhoneListClear, "EventPhoneListClear")
 	GUICtrlSetOnEvent($btnPhoneListExport, "EventPhoneListExport")
-	GUICtrlSetOnEvent($btnCallData, "EventCallData")
-	
+
 	; GUICtrlSetOnEvent($lvPhoneCalls, "Bingo")
 	
 	; Rule List Tab Buttons
 	GUICtrlSetOnEvent($btnRuleAddAdv, "RuleAddAdv")
 	GUICtrlSetOnEvent($btnRuleChange, "RuleChange")
 	GUICtrlSetOnEvent($btnRuleDelete, "RuleDelete")
-	GUICtrlSetOnEvent($btnRuleData, "EventRuleData")
 	
 	; Setting Tab
     GUICtrlSetOnEvent($btnSetPort, "EventSetPort")
@@ -174,7 +173,7 @@ Func Events()
 	GUICtrlSetOnEvent($btnAbout, "EventAbout")
 
 	; Test functions.
-	GUICtrlSetOnEvent($btnTest, "WaitForSilence")
+	GUICtrlSetOnEvent($btnTest, "RuleWarning")
 
 EndFunc   ;==>Events
 
@@ -238,12 +237,11 @@ Func WaitReceiveLines($iTimeLimit = 5000 )
 		$instr = _commGetLine(@CR, 20, 200)
 		If $instr <> "" Then
 			AddLine($instr)
+			; Receive busy signal, the line is disconnected.
+			If StringLeft($instr, 2) == $gsCodeBusy Then ExitLoop 
 		EndIf
-		Sleep(100)
-		; Receive busy signal, the line is disconnected.
-		If $instr = Chr(16) & "b" Then Return 
+		Sleep(10)
 	WEnd
-	
 EndFunc
 
 
@@ -304,6 +302,7 @@ Func HangUp()
 	$gbRinging = False
 	$gbLineProcessed = False
 	Global $gaCurrentCall = ["", "", "", "", ""]			; Clear the current call.
+	InitReceiveFlags()
 EndFunc
 
 Func ProcessCall()
@@ -332,6 +331,14 @@ Func ApplyRule($sPolicy)
 	$gaCurrentCall[$CALL_POLICYAPPLIED] = $sPolicy
 	$aArray = CallArray2D($gaCurrentCall)
 	_GUICtrlListView_AddArray($lvPhoneCalls, $aArray )
+	Switch $sPolicy
+		Case "Warning"
+			RuleWarning()
+		Case "Fake Fax"
+			RuleFakeFax()
+		Case "Disconnect"
+			RuleDisconnect()
+	EndSwitch
 EndFunc
 
 Func CallArray2D(ByRef $aCall)
@@ -342,18 +349,16 @@ EndFunc
 
 Func PatternFits($sNumber, $sPattern)
 	If $sPattern = "" Then Return False 		; No patterns.
-	If $sNumber = $sPattern Then Return True 	; Check Exactly first
+	If $sNumber == $sPattern Then Return True 	; Check Exactly first
 	
-	If StringRight($sPattern, 1) = "*" Then ; Starts with
-		If StringLeft($sNumber, StringLen($sPattern)-1) & "*" = $sPattern Then Return True
-	ElseIf StringLeft($sPattern, 1) = "*" Then ; Ends with
-		If "*" & StringRight($sNumber, StringLen($sPattern) -1) = $sPattern Then Return True
+	If StringRight($sPattern, 1) == "*" Then ; Starts with
+		If StringLeft($sNumber, StringLen($sPattern)-1) & "*" == $sPattern Then Return True
+	ElseIf StringLeft($sPattern, 1) == "*" Then ; Ends with
+		If "*" & StringRight($sNumber, StringLen($sPattern) -1) == $sPattern Then Return True
 	EndIf
 	
 	Return False
 EndFunc
-
-
 
 Func GetValueBySep($str, $sep, $occur = 1)
 	; return the value seperated by $sep
