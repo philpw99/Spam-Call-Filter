@@ -25,5 +25,5 @@ The details are in the Wiki. Here is just a brief introduction:
 * It's Lenny. This feature is not yet working, so it's not in the first release. I am working on this for the next version.
 * ... There will be more rules in the future. Give me time.
 
-## Progress
+## Progress <br>
 The first release is out. Click on the "Release" on the right.
