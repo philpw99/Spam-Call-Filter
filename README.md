@@ -2,14 +2,15 @@
 Use a voice modem to fend off those nasty telemarketers.<br>
 Take a look at the Wiki to see more about this program.<br>
 https://github.com/philpw99/Spam-Call-Filter/wiki
-
+<p>
 ## Disclaimer
 THIS PROGRAM IS PROVIDED AS IT IS. YOU USE IT AT YOUR OWN RISK. I AM NOT LIABLE FOR ANYTHING HAPPENS RELATED TO THIS PROGRAM.<p>
 If you miss some important calls because of my program, that's on you, not me.
+<p>
 ## Why make this program?
 I have been annoyed by various agents calling my home for the last 5 years. They all claimed to be about my "property" in Mexico!? And they all tried to convince me that I could sell that property for thousands of dollars. Over the years, I kept sending Do-Not-Call agency hundreds of complains. Yet those telemarketers just kept on calling. It seems there will never be an end to this enormous waste of my time.<p>
 I got really fed up with this. Definitely need some tool to fight back. After just a little research I found out that I was not the only one. There are millions of people who are suffering the same bad experience just like me. I wonder why no one is able to stop them. Why the government just let this kind of things happen. <p>
-There is a very interesting Raspberry App called "It's Lenny". It can trick those telemarketers into talking to a machine and waste their time. I love this idea! Yet it's very limited, not so easy to setup, so I think maybe it's time for a little different favor. As everyone is much more familiar with Windows. Why not make a Windows-based program to do similar things? <p>
+There is a very interesting [Raspberry App called "It's Lenny"](https://lennytroll.com/). It can trick those telemarketers into talking to a machine and waste their time. I love this idea! Yet it's very limited, not so easy to setup, so I think maybe it's time for a little different favor. As everyone is much more familiar with Windows. Why not make a Windows-based program to do similar things? <p>
 ## How to run this program?
 The details are in the Wiki. Here is just a brief introduction:
 * You need a modem that supports voice features, ideally with Conexant chipset.
