@@ -6,6 +6,8 @@
 #AutoIt3Wrapper_UseX64=n
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
+Global $gsVersion = "1.01"
+
 #include <windowsconstants.au3>
 #include <buttonconstants.au3>
 #include <FileConstants.au3>
@@ -28,6 +30,8 @@
 
 #include "Disclaimer.au3"
 If Not Disclaimer() Then Exit	; Not Accpeting the terms.
+
+#Region Declare Main gui and prepare for loop
 
 ; Create main gui
 Global $guiMain = GUICreate( GuiTitle(),671,723,-1,-1,BitOr($WS_SIZEBOX,$WS_SYSMENU,$WS_MINIMIZEBOX),-1)
@@ -95,7 +99,7 @@ EndIf
 ; Start event mode
 Events()
 
-; Auto monitor
+; Set Call Auto monitoring
 Local $iAutoStart = RegRead($gsRegBase, "AutoMonitor")
 If Not @error And $iAutoStart = 1 Then 
 	GUICtrlSetState($chkAutoMonitor, $GUI_CHECKED)
@@ -103,6 +107,12 @@ If Not @error And $iAutoStart = 1 Then
 Else
 	SetStatus("Not Monitoring...")
 EndIf
+
+#EndRegion Declare Main gui and prepare for loop
+
+
+
+#Region Main Loop
 
 
 Global $ghTimer = TimerInit()	; For doing things every second.
@@ -130,6 +140,8 @@ While True
 		$ghTimer = TimerInit()
 	EndIf
 WEnd
+
+#EndRegion Main Loop
 
 Alldone()	; Disconnect all ports and exit
 
@@ -250,7 +262,9 @@ EndFunc
 Func ProcessLine($sLine)
 	; When doing monitor. The info will come here in lines.
 	$sLine = StringStripWS($sLine, 3)	; No leading or trailing white space.
+	Const $iRingTimeLimit = 30000		; Ring time limit to 30 seconds.
 	c("Line:" & $sLine)
+	Static $hLastRingTime = 0		; Initial a static as 0
 	Switch $sLine
 		Case $gsCodeRing
 			; Line is ringing
@@ -258,18 +272,27 @@ Func ProcessLine($sLine)
 				; The ringing just started. Reset the values.
 				c("Ring started.")
 				$gbRinging = True
-				$gbLineProcessed = False
-				Global $gaCurrentCall = ["", "", "", "", ""]
+				$hLastRingTime = TimerInit()	; Remember the start ringing time.
+				; $gbLineProcessed = False
+				; Global $gaCurrentCall = ["", "", "", "", ""]
 			EndIf
 				
 		Case $gsCodeBusy
 			; Line is busy or disconnected
 			$gbRinging = False
-			$gbLineProcessed = False
+			; $gbLineProcessed = False
 			Global $gaCurrentCall = ["", "", "", "", ""]
+			HangUp()
+		
+		Case $gsCodeExtPickup, $gsCodeExtHangup
+			; Someone pickup the phone or hangup the phone.
+			$gbRinging = False 
+			$gbLineProcessed = False
+			Global $gaCurrentCall = ["", "", "", "", ""]			; Clear the current call.
+			InitReceiveFlags()
 		
 		Case Else
-			If $gbRinging And Not $gbLineProcessed Then
+			If $gbRinging Then
 				c("Process line:" & $sLine)
 				Switch GetValueBySep($sLine, $gsCodeCidSep )	; Get the value on the left side of " = ", or other seperator.
 					Case $gsCodeCidDate
@@ -290,7 +313,16 @@ Func ProcessLine($sLine)
 			Else
 				c("Not processed. Ringing:" & $gbRinging & " Processed:" & $gbLineProcessed)
 			EndIf
+
 	EndSwitch
+	
+	If $hLastRingTime <> 0 And $gbRinging And TimerDiff($hLastRingTime) > $iRingTimeLimit Then 
+		; Ringing flag has been set for too long
+		$gbRinging = False 
+		$gbLineProcessed = True 
+		InitReceiveFlags()
+	EndIf
+
 EndFunc
 
 Func ClearReceived()
@@ -312,18 +344,18 @@ Func ProcessCall()
 	; The phone info is in $gaCurrentCall[5]
 	Local $bRuleFound = False 
 	Local $sNumber = $gaCurrentCall[$CALL_NUMBER]
-	c("Now In process:" & $sNumber)
+	SetStatus("Incoming Call:" & $sNumber)
 	For $i = 0 To UBound($gaRules)-1
 		; Have to process the rules one by one
 		If PatternFits( $sNumber, $gaRules[$i][$RULE_PATTERN] ) Then 
+			SetStatus( "Apply rule:" & $gaRules[$i][$RULE_POLICY] ) 
 			ApplyRule($gaRules[$i][$RULE_POLICY])
 			$bRuleFound = True
-			c( "Apply rule:" & $gaRules[$i][$RULE_POLICY] ) 
 			ExitLoop 
 		EndIf
 	Next
 	If Not $bRuleFound Then
-		c("Apply no rules.")
+		SetStatus("Apply no rules.")
 		ApplyRule("")
 	EndIf
 EndFunc

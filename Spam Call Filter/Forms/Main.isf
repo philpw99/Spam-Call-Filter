@@ -260,13 +260,33 @@ $btnPhoneListClear = GUICtrlCreateButton("Clear List",497,229,112,30,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Clear the phone call list.")
 GUICtrlSetResizing(-1,804)
+GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,2)&GUICtrlRead ($tab, 1))
+$inpCodeExtPickup = GUICtrlCreateInput("P",159,428,77,23,-1,$WS_EX_CLIENTEDGE)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetTip(-1,"Important when playing voice file with modem. Default is Chr(16)+u")
+GUICtrlSetResizing(-1,802)
+GUICtrlSetData(-1, $gsCodeUnderBuffer)
+GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,0)&GUICtrlRead ($tab, 1))
 $btnPhoneListExport = GUICtrlCreateButton("Export List",497,264,112,30,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
 GUICtrlSetTip(-1,"Export the phone call list to a CSV file.")
 GUICtrlSetResizing(-1,804)
 GUISwitch($guiMain,_GUICtrlTab_SetCurFocus($tab,2)&GUICtrlRead ($tab, 1))
+GUICtrlCreateLabel("Ext Pickup",62,428,89,23,-1,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetBkColor(-1,"-2")
+GUICtrlSetResizing(-1,802)
 $btnAbout = GUICtrlCreateButton("About",45,510,100,30,-1,-1)
 GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetResizing(-1,802)
+$inpCodeExtHangup = GUICtrlCreateInput("p",158,460,77,23,-1,$WS_EX_CLIENTEDGE)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetTip(-1,"Important when playing voice file with modem. Default is Chr(16)+u")
+GUICtrlSetResizing(-1,802)
+GUICtrlSetData(-1, $gsCodeUnderBuffer)
+GUICtrlCreateLabel("Ext Hangup",61,460,89,23,-1,-1)
+GUICtrlSetFont(-1,12,400,0,"Tahoma")
+GUICtrlSetBkColor(-1,"-2")
 GUICtrlSetResizing(-1,802)
 _GUICtrlTab_SetCurFocus($tab,0)
 
@@ -303,7 +323,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=0
-[0x00081EFC]
+[0x00091BE6]
 order=0
 [TABPAGE4]
 page=4
@@ -361,7 +381,7 @@ gui_event_resized=
 gui_event_dropped=
 defaultfont=MS Sans Serif
 defaultfontsize=8
-[0x00011F00]
+[0x00021BE2]
 type=label
 handle=434
 locked=0
@@ -390,7 +410,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F02]
+[0x00021BE0]
 type=input
 handle=435
 locked=0
@@ -419,7 +439,7 @@ tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F04]
+[0x00021BDE]
 type=label
 handle=436
 locked=0
@@ -448,7 +468,7 @@ tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F06]
+[0x00021BDC]
 type=button
 handle=437
 locked=0
@@ -477,7 +497,7 @@ tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F08]
+[0x00021BDA]
 type=label
 handle=438
 locked=0
@@ -506,7 +526,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F0A]
+[0x00021BD8]
 type=button
 handle=439
 locked=0
@@ -535,7 +555,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F0C]
+[0x00021BD6]
 type=label
 handle=440
 locked=0
@@ -564,7 +584,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=29
-[0x00011F0E]
+[0x00021BD4]
 type=edit
 handle=441
 locked=0
@@ -593,7 +613,7 @@ tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F10]
+[0x00021BD2]
 type=listview
 handle=442
 locked=0
@@ -622,7 +642,7 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00021F16]
+[0x00031BCC]
 type=button
 handle=443
 locked=0
@@ -651,7 +671,7 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F18]
+[0x00021BCA]
 type=button
 handle=444
 locked=0
@@ -680,7 +700,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=6
-[0x00011F1A]
+[0x00021BC8]
 type=button
 handle=445
 locked=0
@@ -709,7 +729,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=8
-[0x00011F1C]
+[0x00031BC6]
 type=group
 handle=446
 locked=0
@@ -738,7 +758,7 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F1E]
+[0x00041BC4]
 type=listview
 handle=447
 locked=0
@@ -767,7 +787,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00021F24]
+[0x00041BBE]
 type=group
 handle=448
 locked=0
@@ -796,7 +816,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F26]
+[0x00041BBC]
 type=radio
 handle=449
 locked=0
@@ -825,7 +845,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F28]
+[0x00041BBA]
 type=radio
 handle=450
 locked=0
@@ -854,7 +874,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=14
-[0x00011F2A]
+[0x00031BB8]
 type=radio
 handle=451
 locked=0
@@ -883,7 +903,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=15
-[0x00011F2C]
+[0x00031BB6]
 type=input
 handle=452
 locked=0
@@ -912,7 +932,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F2E]
+[0x00041BB4]
 type=group
 handle=453
 locked=0
@@ -941,7 +961,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F30]
+[0x00041BB2]
 type=button
 handle=454
 locked=0
@@ -970,7 +990,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F32]
+[0x00031BB0]
 type=button
 handle=455
 locked=0
@@ -999,7 +1019,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=26
-[0x00011F34]
+[0x00031BAE]
 type=button
 handle=456
 locked=0
@@ -1028,7 +1048,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=25
-[0x00011F36]
+[0x00041BAC]
 type=radio
 handle=457
 locked=0
@@ -1057,7 +1077,7 @@ tabpage=1
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F38]
+[0x00041BAA]
 type=radio
 handle=458
 locked=0
@@ -1086,7 +1106,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=21
-[0x00011F3A]
+[0x00031BA8]
 type=radio
 handle=459
 locked=0
@@ -1115,7 +1135,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=22
-[0x00011F3C]
+[0x00031BA6]
 type=group
 handle=460
 locked=0
@@ -1144,7 +1164,7 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F3E]
+[0x00041BA4]
 type=label
 handle=461
 locked=0
@@ -1173,7 +1193,7 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F40]
+[0x00041BA2]
 type=button
 handle=462
 locked=0
@@ -1202,7 +1222,7 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F42]
+[0x00051BA0]
 type=checkbox
 handle=463
 locked=0
@@ -1231,7 +1251,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F44]
+[0x00031B5E]
 type=input
 handle=464
 locked=0
@@ -1260,7 +1280,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F46]
+[0x00031B5C]
 type=label
 handle=465
 locked=0
@@ -1289,7 +1309,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F48]
+[0x00051C8C]
 type=group
 handle=466
 locked=0
@@ -1318,7 +1338,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F4A]
+[0x00051C92]
 type=input
 handle=467
 locked=0
@@ -1347,7 +1367,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=36
-[0x00011F4C]
+[0x00021D62]
 type=label
 handle=468
 locked=0
@@ -1376,7 +1396,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=35
-[0x00011F4E]
+[0x00021D60]
 type=button
 handle=469
 locked=0
@@ -1405,7 +1425,7 @@ tabpage=3
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F50]
+[0x00021D5E]
 type=input
 handle=470
 locked=0
@@ -1434,7 +1454,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=38
-[0x00011F52]
+[0x00021D5C]
 type=label
 handle=471
 locked=0
@@ -1463,7 +1483,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=37
-[0x00011F54]
+[0x00021D5A]
 type=button
 handle=472
 locked=0
@@ -1492,7 +1512,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=7
-[0x00011F56]
+[0x00021D58]
 type=radio
 handle=473
 locked=0
@@ -1521,7 +1541,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=20
-[0x00011F58]
+[0x00021D56]
 type=radio
 handle=474
 locked=0
@@ -1550,7 +1570,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=19
-[0x00011F5A]
+[0x00021D54]
 type=input
 handle=475
 locked=0
@@ -1579,7 +1599,7 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F5C]
+[0x00021D52]
 type=label
 handle=476
 locked=0
@@ -1608,7 +1628,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=46
-[0x00011F5E]
+[0x00021D50]
 type=label
 handle=477
 locked=0
@@ -1637,7 +1657,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=47
-[0x00011F60]
+[0x00021D4E]
 type=input
 handle=478
 locked=0
@@ -1666,7 +1686,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F62]
+[0x00021D4C]
 type=input
 handle=479
 locked=0
@@ -1695,7 +1715,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F64]
+[0x00021D4A]
 type=label
 handle=480
 locked=0
@@ -1724,7 +1744,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=50
-[0x00011F66]
+[0x00021D48]
 type=input
 handle=481
 locked=0
@@ -1753,7 +1773,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F68]
+[0x00021D46]
 type=label
 handle=482
 locked=0
@@ -1782,7 +1802,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=52
-[0x00011F6A]
+[0x00021D44]
 type=input
 handle=483
 locked=0
@@ -1811,7 +1831,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F6C]
+[0x00021D42]
 type=group
 handle=484
 locked=0
@@ -1840,7 +1860,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F6E]
+[0x00021D40]
 type=button
 handle=485
 locked=0
@@ -1869,7 +1889,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F70]
+[0x00021D3E]
 type=label
 handle=486
 locked=0
@@ -1898,7 +1918,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=56
-[0x00011F72]
+[0x00021D3C]
 type=input
 handle=487
 locked=0
@@ -1927,7 +1947,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F74]
+[0x00021D3A]
 type=checkbox
 handle=488
 locked=0
@@ -1956,7 +1976,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=58
-[0x00011F76]
+[0x00021D38]
 type=label
 handle=489
 locked=0
@@ -1985,7 +2005,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F78]
+[0x00021D36]
 type=input
 handle=490
 locked=0
@@ -2014,7 +2034,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=60
-[0x00011F7A]
+[0x00021D34]
 type=label
 handle=491
 locked=0
@@ -2043,7 +2063,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=61
-[0x00011F7C]
+[0x00021D32]
 type=button
 handle=492
 locked=0
@@ -2072,7 +2092,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=62
-[0x00011F7E]
+[0x00021D30]
 type=combo
 handle=493
 locked=0
@@ -2101,7 +2121,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F84]
+[0x00021D2A]
 type=label
 handle=494
 locked=0
@@ -2130,7 +2150,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F86]
+[0x00021D28]
 type=button
 handle=495
 locked=0
@@ -2159,7 +2179,7 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F88]
+[0x00021D24]
 type=button
 handle=496
 locked=0
@@ -2188,7 +2208,7 @@ tabpage=0
 iconindex=
 iconlarge=0
 textmode=text
-[0x00011F8A]
+[0x00021D22]
 type=button
 handle=497
 locked=0
@@ -2217,7 +2237,7 @@ iconindex=
 iconlarge=0
 textmode=text
 order=67
-[0x00011F8C]
+[0x00021D20]
 type=button
 handle=498
 locked=0
@@ -2246,4 +2266,120 @@ tabpage=2
 iconindex=
 iconlarge=0
 textmode=text
+[0x00081D26]
+type=input
+handle=507
+locked=0
+resize=802
+x=159
+y=428
+width=77
+height=23
+func=
+font=Tahoma
+fontsize=12
+fontstyle=400
+fontattribute=0
+tooltip=Important when playing voice file with modem. Default is Chr(16)+u
+bgimage=
+textcolour=0x000000
+id=$inpCodeExtPickup
+text=P
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=$WS_EX_CLIENTEDGE
+bgcolour=
+code=GUICtrlSetData(-1, $gsCodeUnderBuffer)
+tabpage=2
+iconindex=
+iconlarge=0
+textmode=text
+order=67
+[0x00061D1E]
+type=label
+handle=508
+locked=0
+resize=802
+x=62
+y=428
+width=89
+height=23
+func=
+font=Tahoma
+fontsize=12
+fontstyle=400
+fontattribute=0
+tooltip=
+bgimage=
+textcolour=0x000000
+id=
+text=Ext Pickup
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=-2
+code=
+tabpage=2
+iconindex=
+iconlarge=0
+textmode=text
+order=68
+[0x00061D00]
+type=input
+handle=509
+locked=0
+resize=802
+x=158
+y=460
+width=77
+height=23
+func=
+font=Tahoma
+fontsize=12
+fontstyle=400
+fontattribute=0
+tooltip=Important when playing voice file with modem. Default is Chr(16)+u
+bgimage=
+textcolour=0x000000
+id=$inpCodeExtHangup
+text=p
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=$WS_EX_CLIENTEDGE
+bgcolour=
+code=GUICtrlSetData(-1, $gsCodeUnderBuffer)
+tabpage=2
+iconindex=
+iconlarge=0
+textmode=text
+order=69
+[0x00051D02]
+type=label
+handle=510
+locked=0
+resize=802
+x=61
+y=460
+width=89
+height=23
+func=
+font=Tahoma
+fontsize=12
+fontstyle=400
+fontattribute=0
+tooltip=
+bgimage=
+textcolour=0x000000
+id=
+text=Ext Hangup
+state=$GUI_SHOW+$GUI_ENABLE
+style=
+exstyle=
+bgcolour=-2
+code=
+tabpage=2
+iconindex=
+iconlarge=0
+textmode=text
+order=70
 #ce

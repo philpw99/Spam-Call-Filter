@@ -292,6 +292,8 @@ Func InitModem()
 	; SendCommand("ATV1")	; Set verbose response
 	SendCommand("ATS0=0")	; Disable auto answering (just in case)
 	SendCommand("AT+VCID=1")	; Enable caller ID
+	SendCommand("AT-SCID=1")	; Enable Type II CID
+	SendCommand("AT-STE=3")		; Enable detection of extention pickup
 	AddLine( "Entering Voice Mode:" & SendCommand("AT+FCLASS=8") )	; Enter voice mode
 	SendCommand("AT+VTD=20")	; Set DTMF dial tone duration. Reg is 85, too long.
 	SetStatus("Modem is ready.")

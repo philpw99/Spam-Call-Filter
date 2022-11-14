@@ -1,7 +1,6 @@
 ;Globals.au3
 ; All registry settings stored here.
 
-Global $gsVersion = "1.0"
 Global $gsRegBase = "HKEY_CURRENT_USER\Software\SpamCallFilter"
 Global $oModem = ObjCreate("Scripting.Dictionary")
 ; Set auto monitor. The monitoring setting will be determined in the main file.
@@ -83,6 +82,18 @@ Func InitCodes()
 	If @error Then 
 		$gsCodeUnderBuffer = Chr(16) & "u"
 		RegWrite($gsRegBase, "CodeUnderBuffer", "REG_SZ", $gsCodeUnderBuffer)
+	EndIf
+	; Extension Pickup
+	Global $gsCodeExtPickup = RegRead($gsRegBase, "CodeExtPickup")
+	If @error Then 
+		$gsCodeExtPickup = Chr(16) & "P"
+		RegWrite($gsRegBase, "CodeExtPickup", "REG_SZ", $gsCodeExtPickup)
+	EndIf
+	; Extension Hangup
+	Global $gsCodeExtHangup = RegRead($gsRegBase, "CodeExtHangup")
+	If @error Then 
+		$gsCodeExtHangup = Chr(16) & "p"
+		RegWrite($gsRegBase, "CodeExtHangup", "REG_SZ", $gsCodeExtHangup)
 	EndIf
 
 	; Caller id codes
