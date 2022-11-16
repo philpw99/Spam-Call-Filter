@@ -12,7 +12,9 @@ I have been annoyed by various agents calling my home for the last 5 years. They
 I got really fed up with this. Definitely need some tool to fight back. After just a little research I found out that I was not the only one. There are millions of people who are suffering the same bad experience just like me. I wonder why no one is able to stop them. Why the government just let this kind of things happen. <p>
 There is a very interesting Raspberry App called "It's Lenny" https://lennytroll.com . It can trick those telemarketers into talking to a machine and waste their time. I love this idea! Yet it's very limited, not so easy to setup, so I think maybe it's time for a little different favor. As everyone is much more familiar with Windows. Why not make a Windows-based program to do similar things? <p>
 ## How to run this program? <br>
-The details are in the Wiki. Here is just a brief introduction: <br>
+The details are in the Wiki. <br>
+https://github.com/philpw99/Spam-Call-Filter/wiki/Requirement-and-Installation  <br>
+Here is just a brief introduction: <br>
 * You need a modem that supports voice features, ideally with Conexant chipset. <br>
 * You need to have a phone line that supports caller id feature. <br>
 * You need an old computer or laptop to run this program. You need at least Windows XP. <br>
