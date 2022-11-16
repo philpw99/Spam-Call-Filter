@@ -25,7 +25,7 @@ Here is just a brief introduction: <br>
 * Disconnect. The program will pickup the call, keep silence for 20 secends then hang up. <br>
 * Warning.  The program will pick up the call, play a voice message and warn the caller do not call this number then hang up. The voice is provided by Microsoft Azure. <br>
 * It's Lenny. This feature is not yet working, so it's not in the first release. I am working on this for the next version. <br>
-* ... There will be more rules in the future. Give me time. <br>
+* Want more rules? Raise an issue and let me know. <br>
 
 ## Progress <br>
-The first release is out. Click on the "Release" on the right.
+The v1.01 release is out. Click on the "Release" on the right.
