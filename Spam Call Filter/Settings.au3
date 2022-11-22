@@ -38,7 +38,8 @@ Func SetAutoMonitor()
 EndFunc
 
 Func EventAbout()
-	MsgBox(262208,"About this program","Github:  https://github.com/philpw99/Spam-Call-Filter" _ 
+	MsgBox(262208,"About Spam Call Filter","Version:" & $gsVersion _ 
+		& @CRLF & "Github:  https://github.com/philpw99/Spam-Call-Filter" _ 
 		& @CRLF & "This program is my middle finger to all the telemarketers out there, " _ 
 		& @CRLF & "who make millions of phone calls and waste so much of people's time." _ 
 		& @CRLF & "And billions of dollars were cheated out of innocent people every year." _ 

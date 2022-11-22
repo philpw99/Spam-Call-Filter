@@ -6,6 +6,10 @@ Global $oModem = ObjCreate("Scripting.Dictionary")
 ; Set auto monitor. The monitoring setting will be determined in the main file.
 Global $gbCallMonitor = False
 
+; This is the phone recorder buffer.
+Global $gsPhoneInBuffer = ""
+Global $gsPhoneOutBuffer
+
 ; Set Save log
 Global $gbSaveLog = False 
 If RegRead($gsRegBase, "SaveLog") = 1 Then

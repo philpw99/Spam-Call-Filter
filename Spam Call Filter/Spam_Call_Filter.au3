@@ -6,7 +6,7 @@
 #AutoIt3Wrapper_UseX64=n
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
-Global $gsVersion = "1.01"
+Global $gsVersion = "1.02"
 
 #include <windowsconstants.au3>
 #include <buttonconstants.au3>
@@ -166,6 +166,7 @@ Func Events()
 	GUICtrlSetOnEvent($btnFakeFax, "RuleAddFakeFax")
 	GUICtrlSetOnEvent($btnPhoneListClear, "EventPhoneListClear")
 	GUICtrlSetOnEvent($btnPhoneListExport, "EventPhoneListExport")
+	GUICtrlSetOnEvent($btnPhoneListLoad, "EventPhoneListLoad")
 
 	; GUICtrlSetOnEvent($lvPhoneCalls, "Bingo")
 	
@@ -187,7 +188,7 @@ Func Events()
 	GUICtrlSetOnEvent($btnAbout, "EventAbout")
 
 	; Test functions.
-	GUICtrlSetOnEvent($btnTest, "RuleWarning")
+	GUICtrlSetOnEvent($btnTest, "WaitForSilence")
 
 EndFunc   ;==>Events
 
@@ -539,6 +540,44 @@ EndFunc
 
 Func EventPhoneListClear()
 	_GUICtrlListView_DeleteAllItems($lvPhoneCalls)
+EndFunc
+
+Func EventPhoneListLoad()
+	$sFile = FileOpenDialog("Open Phone List File", @DocumentsCommonDir, "Comma Seperated Values Files(*.csv)", 0, "Phone List.csv", $guiMain )
+	If @error Then 
+		MsgBox(262144,"File Not Load","No file is loaded.",0, $guiMain)
+		Return 
+	EndIf
+	
+	$hFile =  FileOpen($sFile)	; Read only
+	If $hFile = -1 Then 
+		MsgBox(262160,"Error Open File","Error trying to write the file:" _
+			& @CRLF & $sFile ,0, $guiMain)
+		Return 
+	EndIf
+	; Get phone list
+	FileReadLine($hFile)	; read the head line
+	While True
+		$sLine = FileReadLine($hFile)
+		If @error Then ExitLoop
+		$aLine = StringSplit($sLine, ",")
+		If $aLine[0] = 5 Then ; Legitimate line with 5 entries
+			Local $aRow[1][5]
+			For $i = 1 To 5
+				$aRow[0][$i-1] = GetQuotedText($aLine[$i])
+			Next
+			_GUICtrlListView_AddArray($lvPhoneCalls, $aRow)
+		EndIf
+	WEnd 
+EndFunc
+
+Func GetQuotedText($str)
+	; return the text between the quote
+	Local $iPos1 = StringInStr($str, '"', 1, 1)
+	If @error Or $iPos1 = 0 Then Return ""
+	Local $iPos2 = StringInStr($str, '"', 1, 2)
+	If  @error or $iPos2 = 0 Then Return ""
+	Return StringMid($str, $iPos1 + 1,  $iPos2-$iPos1-1)
 EndFunc
 
 Func EventPhoneListExport()
